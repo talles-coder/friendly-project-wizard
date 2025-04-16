@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { Coupon } from "@/types";
 import { Button } from "@/components/ui/button";
@@ -17,48 +16,99 @@ import {
   DialogHeader, 
   DialogTitle, 
   DialogFooter,
-  DialogTrigger,
+  DialogDescription,
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { useAuth } from "@/contexts/AuthContext";
+import { Textarea } from "@/components/ui/textarea";
+import { Switch } from "@/components/ui/switch";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
-// Gera dados de exemplo
+// Gera dados de exemplo atualizados
 const generateMockCoupons = (): Coupon[] => {
+  const now = new Date().toISOString();
   return [
     {
       id: "1",
       name: "BLACKFRIDAY",
+      description: "Desconto para Black Friday",
+      discountType: "percentage",
+      discountValue: 20,
       availableQuantity: 100,
       usedCount: 23,
+      startDate: "2023-11-20",
       validUntil: "2023-11-30",
+      isActive: true,
+      createdAt: now,
+      updatedAt: now,
+      createdBy: "Admin",
     },
     {
       id: "2",
       name: "WELCOME10",
+      description: "Desconto de boas-vindas",
+      discountType: "fixed",
+      discountValue: 10,
       availableQuantity: 500,
       usedCount: 152,
+      startDate: "2023-12-01",
       validUntil: "2023-12-31",
+      isActive: true,
+      createdAt: now,
+      updatedAt: now,
+      createdBy: "System",
     },
     {
       id: "3",
       name: "SUMMER2023",
+      description: "Desconto de verão",
+      discountType: "percentage",
+      discountValue: 15,
       availableQuantity: 200,
       usedCount: 87,
+      startDate: "2023-07-01",
       validUntil: "2023-08-31",
+      isActive: false,
+      createdAt: now,
+      updatedAt: now,
+      createdBy: "Marketing",
     },
     {
       id: "4",
       name: "AFILIADO20",
+      description: "Desconto exclusivo para afiliados",
+      discountType: "percentage",
+      discountValue: 20,
       availableQuantity: 50,
       usedCount: 12,
+      startDate: "2023-09-01",
       validUntil: "2023-09-15",
+      isActive: true,
+      createdAt: now,
+      updatedAt: now,
+      createdBy: "AffiliateManager",
     },
     {
       id: "5",
       name: "PRIMEIRACOMPRA",
+      description: "Desconto para a primeira compra",
+      discountType: "fixed",
+      discountValue: 5,
       availableQuantity: 1000,
       usedCount: 345,
+      startDate: "2023-01-01",
       validUntil: "2023-12-31",
+      isActive: true,
+      createdAt: now,
+      updatedAt: now,
+      createdBy: "System",
     },
   ];
 };
@@ -125,12 +175,21 @@ const Coupons = () => {
   const handleCreateSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (editForm) {
+      const now = new Date().toISOString();
       const newCoupon: Coupon = {
         id: Date.now().toString(),
         name: editForm.name || "",
+        description: editForm.description || "",
+        discountType: editForm.discountType || "percentage",
+        discountValue: Number(editForm.discountValue) || 0,
         availableQuantity: Number(editForm.availableQuantity) || 0,
         usedCount: 0,
-        validUntil: editForm.validUntil || new Date().toISOString().split("T")[0],
+        startDate: editForm.startDate || now.split("T")[0],
+        validUntil: editForm.validUntil || now.split("T")[0],
+        isActive: editForm.isActive ?? true,
+        createdAt: now,
+        updatedAt: now,
+        createdBy: user?.name || "Unknown",
       };
       saveCoupons([...coupons, newCoupon]);
       setIsCreateDialogOpen(false);
@@ -211,6 +270,135 @@ const Coupons = () => {
         </Table>
       </div>
 
+      {/* Form Dialog (Create/Edit) */}
+      <Dialog open={isCreateDialogOpen || isEditDialogOpen} 
+             onOpenChange={(open) => {
+               if (!open) {
+                 setIsCreateDialogOpen(false);
+                 setIsEditDialogOpen(false);
+               }
+             }}>
+        <DialogContent className="max-w-2xl">
+          <DialogHeader>
+            <DialogTitle>
+              {isCreateDialogOpen ? "Novo Cupom" : "Editar Cupom"}
+            </DialogTitle>
+            <DialogDescription>
+              Preencha os dados do cupom abaixo.
+            </DialogDescription>
+          </DialogHeader>
+          <form onSubmit={isCreateDialogOpen ? handleCreateSubmit : handleEditSubmit} 
+                className="space-y-4 py-2">
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="name">Nome do Cupom</Label>
+                <Input
+                  id="name"
+                  value={editForm.name || ""}
+                  onChange={(e) => setEditForm({ ...editForm, name: e.target.value })}
+                  required
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="discountType">Tipo de Desconto</Label>
+                <Select
+                  value={editForm.discountType || "percentage"}
+                  onValueChange={(value) => setEditForm({ ...editForm, discountType: value as "percentage" | "fixed" })}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Selecione o tipo" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="percentage">Porcentagem</SelectItem>
+                    <SelectItem value="fixed">Valor Fixo</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="discountValue">Valor do Desconto</Label>
+                <Input
+                  id="discountValue"
+                  type="number"
+                  value={editForm.discountValue || ""}
+                  onChange={(e) => setEditForm({ ...editForm, discountValue: parseFloat(e.target.value) })}
+                  required
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="availableQuantity">Quantidade Máxima</Label>
+                <Input
+                  id="availableQuantity"
+                  type="number"
+                  value={editForm.availableQuantity || ""}
+                  onChange={(e) => setEditForm({ ...editForm, availableQuantity: parseInt(e.target.value) })}
+                  required
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="startDate">Data de Início</Label>
+                <Input
+                  id="startDate"
+                  type="date"
+                  value={editForm.startDate || ""}
+                  onChange={(e) => setEditForm({ ...editForm, startDate: e.target.value })}
+                  required
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="validUntil">Data de Fim</Label>
+                <Input
+                  id="validUntil"
+                  type="date"
+                  value={editForm.validUntil || ""}
+                  onChange={(e) => setEditForm({ ...editForm, validUntil: e.target.value })}
+                  required
+                />
+              </div>
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="description">Descrição</Label>
+              <Textarea
+                id="description"
+                value={editForm.description || ""}
+                onChange={(e) => setEditForm({ ...editForm, description: e.target.value })}
+                required
+              />
+            </div>
+
+            <div className="flex items-center space-x-2">
+              <Switch
+                id="isActive"
+                checked={editForm.isActive ?? true}
+                onCheckedChange={(checked) => setEditForm({ ...editForm, isActive: checked })}
+              />
+              <Label htmlFor="isActive">Ativo</Label>
+            </div>
+
+            <DialogFooter>
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => {
+                  setIsCreateDialogOpen(false);
+                  setIsEditDialogOpen(false);
+                }}
+              >
+                Cancelar
+              </Button>
+              <Button type="submit">
+                {isCreateDialogOpen ? "Criar Cupom" : "Salvar Alterações"}
+              </Button>
+            </DialogFooter>
+          </form>
+        </DialogContent>
+      </Dialog>
+
       {/* Dialog de Confirmação de Exclusão */}
       <Dialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
         <DialogContent>
@@ -240,126 +428,6 @@ const Coupons = () => {
               Excluir
             </Button>
           </DialogFooter>
-        </DialogContent>
-      </Dialog>
-
-      {/* Dialog de Edição de Cupom */}
-      <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Editar Cupom</DialogTitle>
-          </DialogHeader>
-          <form onSubmit={handleEditSubmit} className="space-y-4 py-2">
-            <div className="space-y-2">
-              <label htmlFor="name" className="text-sm font-medium">
-                Nome do Cupom
-              </label>
-              <Input
-                id="name"
-                value={editForm.name || ""}
-                onChange={(e) => setEditForm({ ...editForm, name: e.target.value })}
-                required
-              />
-            </div>
-            <div className="space-y-2">
-              <label htmlFor="availableQuantity" className="text-sm font-medium">
-                Quantidade Disponível
-              </label>
-              <Input
-                id="availableQuantity"
-                type="number"
-                value={editForm.availableQuantity || ""}
-                onChange={(e) =>
-                  setEditForm({ ...editForm, availableQuantity: parseInt(e.target.value) })
-                }
-                required
-              />
-            </div>
-            <div className="space-y-2">
-              <label htmlFor="validUntil" className="text-sm font-medium">
-                Válido Até
-              </label>
-              <Input
-                id="validUntil"
-                type="date"
-                value={editForm.validUntil ? editForm.validUntil.split("T")[0] : ""}
-                onChange={(e) =>
-                  setEditForm({ ...editForm, validUntil: e.target.value })
-                }
-                required
-              />
-            </div>
-            <DialogFooter>
-              <Button
-                type="button"
-                variant="outline"
-                onClick={() => setIsEditDialogOpen(false)}
-              >
-                Cancelar
-              </Button>
-              <Button type="submit">Salvar Alterações</Button>
-            </DialogFooter>
-          </form>
-        </DialogContent>
-      </Dialog>
-
-      {/* Dialog de Criação de Cupom */}
-      <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Novo Cupom</DialogTitle>
-          </DialogHeader>
-          <form onSubmit={handleCreateSubmit} className="space-y-4 py-2">
-            <div className="space-y-2">
-              <label htmlFor="create-name" className="text-sm font-medium">
-                Nome do Cupom
-              </label>
-              <Input
-                id="create-name"
-                value={editForm.name || ""}
-                onChange={(e) => setEditForm({ ...editForm, name: e.target.value })}
-                required
-              />
-            </div>
-            <div className="space-y-2">
-              <label htmlFor="create-quantity" className="text-sm font-medium">
-                Quantidade Disponível
-              </label>
-              <Input
-                id="create-quantity"
-                type="number"
-                value={editForm.availableQuantity || ""}
-                onChange={(e) =>
-                  setEditForm({ ...editForm, availableQuantity: parseInt(e.target.value) })
-                }
-                required
-              />
-            </div>
-            <div className="space-y-2">
-              <label htmlFor="create-valid" className="text-sm font-medium">
-                Válido Até
-              </label>
-              <Input
-                id="create-valid"
-                type="date"
-                value={editForm.validUntil || ""}
-                onChange={(e) =>
-                  setEditForm({ ...editForm, validUntil: e.target.value })
-                }
-                required
-              />
-            </div>
-            <DialogFooter>
-              <Button
-                type="button"
-                variant="outline"
-                onClick={() => setIsCreateDialogOpen(false)}
-              >
-                Cancelar
-              </Button>
-              <Button type="submit">Criar Cupom</Button>
-            </DialogFooter>
-          </form>
         </DialogContent>
       </Dialog>
     </div>

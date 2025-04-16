@@ -11,7 +11,15 @@ export interface User {
 export interface Coupon {
   id: string;
   name: string;
+  description: string;
+  discountType: "percentage" | "fixed";
+  discountValue: number;
   availableQuantity: number;
   usedCount: number;
+  startDate: string;
   validUntil: string;
+  isActive: boolean;
+  createdAt: string;
+  updatedAt: string;
+  createdBy: string;
 }
