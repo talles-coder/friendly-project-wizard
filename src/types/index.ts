@@ -5,7 +5,7 @@ export interface User {
   email: string;
   cpf: string;
   phone: string;
-  role: "admin" | "afiliado";
+  role: "admin" | "afiliado" | "polo";
 }
 
 export interface Coupon {
@@ -14,6 +14,7 @@ export interface Coupon {
   description: string;
   discountType: "percentage" | "fixed";
   discountValue: number;
+  subscriptionDiscount: number;
   availableQuantity: number;
   usedCount: number;
   startDate: string;
@@ -22,4 +23,11 @@ export interface Coupon {
   createdAt: string;
   updatedAt: string;
   createdBy: string;
+}
+
+export interface DashboardData {
+  membershipRevenue: number;
+  totalUsedCoupons: number;
+  couponUsageRate: number;
+  topCoupons: Coupon[];
 }

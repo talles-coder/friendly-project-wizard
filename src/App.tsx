@@ -10,11 +10,9 @@ import Layout from "./components/Layout";
 import Coupons from "./pages/Coupons";
 import Users from "./pages/Users";
 import NotFound from "./pages/NotFound";
-import Index from "./pages/Index";
+import Dashboard from "./pages/Dashboard";
 
-// Properly initialize QueryClient in the component body
 function App() {
-  // Create a new QueryClient instance
   const queryClient = new QueryClient();
 
   return (
@@ -25,19 +23,14 @@ function App() {
           <Sonner />
           <BrowserRouter>
             <Routes>
-              {/* Rota de Login */}
               <Route path="/login" element={<Login />} />
               
-              {/* Rotas protegidas */}
               <Route element={<Layout />}>
+                <Route path="/" element={<Dashboard />} />
                 <Route path="/cupons" element={<Coupons />} />
                 <Route path="/usuarios" element={<Users />} />
               </Route>
-
-              {/* Index route */}
-              <Route path="/" element={<Index />} />
               
-              {/* Página não encontrada */}
               <Route path="*" element={<NotFound />} />
             </Routes>
           </BrowserRouter>

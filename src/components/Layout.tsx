@@ -1,24 +1,24 @@
 
 import { useAuth } from "@/contexts/AuthContext";
-import { Navigate, Outlet } from "react-router-dom";
+import { Navigate, Outlet, useLocation } from "react-router-dom";
 import Navbar from "./Navbar";
 import Sidebar from "./Sidebar";
 
-interface LayoutProps {
-  requiredRole?: "admin" | "afiliado" | undefined;
-}
-
-const Layout = ({ requiredRole }: LayoutProps) => {
+const Layout = () => {
   const { user, isAuthenticated } = useAuth();
+  const location = useLocation();
 
-  // If not logged in, redirect to login
   if (!isAuthenticated) {
     return <Navigate to="/login" replace />;
   }
 
-  // If role is required and user doesn't have it, redirect to dashboard
-  if (requiredRole && user?.role !== requiredRole) {
-    return <Navigate to="/cupons" replace />;
+  // Check access to Users page
+  if (
+    location.pathname === "/usuarios" &&
+    user?.role !== "admin" &&
+    user?.role !== "polo"
+  ) {
+    return <Navigate to="/" replace />;
   }
 
   return (

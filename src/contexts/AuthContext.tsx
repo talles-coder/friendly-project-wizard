@@ -29,6 +29,14 @@ const MOCK_USERS: User[] = [
     phone: "(11) 91234-5678",
     role: "afiliado",
   },
+  {
+    id: "3",
+    name: "Polo Teste",
+    email: "polo@example.com",
+    cpf: "456.789.123-00",
+    phone: "(11) 94567-8901",
+    role: "polo",
+  },
 ];
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
