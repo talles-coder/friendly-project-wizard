@@ -24,6 +24,24 @@ export interface Coupon {
   createdAt: string;
   updatedAt: string;
   createdBy: string;
+  // Availability Rules
+  availabilityRules?: {
+    discountType: string;
+    baseValue?: number;
+    limitValue?: number;
+    unitFilter: string;
+    selectedUnits?: string[];
+    courseFilter: string;
+    selectedCourses?: string[];
+    ingressFormFilter: string;
+    selectedIngressForms?: string[];
+    userFilter: string;
+    selectedUsers?: string[];
+    semesterFilter?: string;
+    selectedSemesters?: string[];
+    initialValidity: string;
+    finalValidity: string;
+  };
 }
 
 export interface DashboardData {
