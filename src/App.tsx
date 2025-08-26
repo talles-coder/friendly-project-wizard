@@ -9,6 +9,7 @@ import Login from "./pages/Login";
 import Layout from "./components/Layout";
 import Coupons from "./pages/Coupons";
 import Users from "./pages/Users";
+import Affiliates from "./pages/Affiliates";
 import NotFound from "./pages/NotFound";
 import Dashboard from "./pages/Dashboard";
 
@@ -28,6 +29,7 @@ function App() {
               <Route element={<Layout />}>
                 <Route path="/" element={<Dashboard />} />
                 <Route path="/cupons" element={<Coupons />} />
+                <Route path="/afiliados" element={<Affiliates />} />
                 <Route path="/usuarios" element={<Users />} />
               </Route>
               

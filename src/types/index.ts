@@ -44,6 +44,19 @@ export interface Coupon {
   };
 }
 
+export interface Affiliate {
+  id: string;
+  name: string;
+  cpf: string;
+  email: string;
+  socialNetworks: {
+    facebook?: string;
+    tiktok?: string;
+    instagram?: string;
+    youtube?: string;
+  };
+}
+
 export interface DashboardData {
   membershipRevenue: number;
   totalUsedCoupons: number;
