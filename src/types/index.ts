@@ -47,8 +47,24 @@ export interface Coupon {
 export interface Affiliate {
   id: string;
   name: string;
+  birthDate: string;
   cpf: string;
   email: string;
+  phone?: string;
+  address?: {
+    street?: string;
+    number?: string;
+    neighborhood?: string;
+    city?: string;
+    state?: string;
+    zipCode?: string;
+  };
+  internalCode: string;
+  partnershipStartDate: string;
+  commissionRate: number;
+  commissionType: "percentage" | "fixed";
+  notes?: string;
+  pixKey: string;
   socialNetworks: {
     facebook?: string;
     tiktok?: string;
