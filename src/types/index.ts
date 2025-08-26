@@ -10,6 +10,7 @@ export interface User {
 
 export interface Coupon {
   id: string;
+  code: string;
   name: string;
   description: string;
   discountType: "percentage" | "fixed";

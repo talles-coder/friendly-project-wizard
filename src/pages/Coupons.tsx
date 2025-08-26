@@ -37,10 +37,12 @@ const generateMockCoupons = (): Coupon[] => {
   return [
     {
       id: "1",
+      code: "BLACKFRIDAY2023",
       name: "BLACKFRIDAY",
       description: "Desconto para Black Friday",
       discountType: "percentage",
       discountValue: 20,
+      subscriptionDiscount: 0,
       availableQuantity: 100,
       usedCount: 23,
       startDate: "2023-11-20",
@@ -52,10 +54,12 @@ const generateMockCoupons = (): Coupon[] => {
     },
     {
       id: "2",
+      code: "WELCOME10",
       name: "WELCOME10",
       description: "Desconto de boas-vindas",
       discountType: "fixed",
       discountValue: 10,
+      subscriptionDiscount: 0,
       availableQuantity: 500,
       usedCount: 152,
       startDate: "2023-12-01",
@@ -67,10 +71,12 @@ const generateMockCoupons = (): Coupon[] => {
     },
     {
       id: "3",
+      code: "SUMMER2023",
       name: "SUMMER2023",
       description: "Desconto de verão",
       discountType: "percentage",
       discountValue: 15,
+      subscriptionDiscount: 0,
       availableQuantity: 200,
       usedCount: 87,
       startDate: "2023-07-01",
@@ -82,10 +88,12 @@ const generateMockCoupons = (): Coupon[] => {
     },
     {
       id: "4",
+      code: "AFILIADO20",
       name: "AFILIADO20",
       description: "Desconto exclusivo para afiliados",
       discountType: "percentage",
       discountValue: 20,
+      subscriptionDiscount: 0,
       availableQuantity: 50,
       usedCount: 12,
       startDate: "2023-09-01",
@@ -97,10 +105,12 @@ const generateMockCoupons = (): Coupon[] => {
     },
     {
       id: "5",
+      code: "PRIMEIRACOMPRA",
       name: "PRIMEIRACOMPRA",
       description: "Desconto para a primeira compra",
       discountType: "fixed",
       discountValue: 5,
+      subscriptionDiscount: 0,
       availableQuantity: 1000,
       usedCount: 345,
       startDate: "2023-01-01",
@@ -164,8 +174,18 @@ const Coupons = () => {
   const handleEditSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (selectedCoupon && editForm) {
+      // Validate unique coupon code among active coupons
+      const existingActiveCoupon = coupons.find(
+        c => c.code === editForm.code && c.isActive && c.id !== selectedCoupon.id
+      );
+      
+      if (existingActiveCoupon && editForm.isActive) {
+        alert("Já existe um cupom ativo com este código. Use um código diferente.");
+        return;
+      }
+
       const updatedCoupons = coupons.map((c) =>
-        c.id === selectedCoupon.id ? { ...c, ...editForm } : c
+        c.id === selectedCoupon.id ? { ...c, ...editForm, updatedAt: new Date().toISOString() } : c
       );
       saveCoupons(updatedCoupons);
       setIsEditDialogOpen(false);
@@ -175,13 +195,25 @@ const Coupons = () => {
   const handleCreateSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (editForm) {
+      // Validate unique coupon code among active coupons
+      const existingActiveCoupon = coupons.find(
+        c => c.code === editForm.code && c.isActive && c.id !== selectedCoupon?.id
+      );
+      
+      if (existingActiveCoupon) {
+        alert("Já existe um cupom ativo com este código. Use um código diferente.");
+        return;
+      }
+
       const now = new Date().toISOString();
       const newCoupon: Coupon = {
         id: Date.now().toString(),
+        code: editForm.code || "",
         name: editForm.name || "",
         description: editForm.description || "",
         discountType: editForm.discountType || "percentage",
         discountValue: Number(editForm.discountValue) || 0,
+        subscriptionDiscount: Number(editForm.subscriptionDiscount) || 0,
         availableQuantity: Number(editForm.availableQuantity) || 0,
         usedCount: 0,
         startDate: editForm.startDate || now.split("T")[0],
@@ -223,8 +255,9 @@ const Coupons = () => {
         <Table>
           <TableHeader>
             <TableRow>
+              <TableHead>Código</TableHead>
               <TableHead>Nome do Cupom</TableHead>
-              <TableHead>Quantidade Disponível</TableHead>
+              <TableHead>Quantidade Máxima</TableHead>
               <TableHead>Usos</TableHead>
               <TableHead>Validade</TableHead>
               <TableHead className="text-right">Ações</TableHead>
@@ -233,6 +266,7 @@ const Coupons = () => {
           <TableBody>
             {coupons.map((coupon) => (
               <TableRow key={coupon.id}>
+                <TableCell className="font-mono text-sm">{coupon.code}</TableCell>
                 <TableCell className="font-medium">{coupon.name}</TableCell>
                 <TableCell>{coupon.availableQuantity}</TableCell>
                 <TableCell>{coupon.usedCount}</TableCell>
@@ -261,7 +295,7 @@ const Coupons = () => {
             ))}
             {coupons.length === 0 && (
               <TableRow>
-                <TableCell colSpan={5} className="text-center py-6 text-gray-500">
+                <TableCell colSpan={6} className="text-center py-6 text-gray-500">
                   Nenhum cupom encontrado
                 </TableCell>
               </TableRow>
@@ -290,6 +324,17 @@ const Coupons = () => {
           <form onSubmit={isCreateDialogOpen ? handleCreateSubmit : handleEditSubmit} 
                 className="space-y-4 py-2">
             <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="code">Código do Cupom</Label>
+                <Input
+                  id="code"
+                  value={editForm.code || ""}
+                  onChange={(e) => setEditForm({ ...editForm, code: e.target.value.toUpperCase() })}
+                  placeholder="Ex: DESCONTO50"
+                  required
+                />
+              </div>
+
               <div className="space-y-2">
                 <Label htmlFor="name">Nome do Cupom</Label>
                 <Input
@@ -328,12 +373,14 @@ const Coupons = () => {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="availableQuantity">Quantidade Máxima</Label>
+                <Label htmlFor="availableQuantity">Quantidade Máxima (Utilizações)</Label>
                 <Input
                   id="availableQuantity"
                   type="number"
                   value={editForm.availableQuantity || ""}
                   onChange={(e) => setEditForm({ ...editForm, availableQuantity: parseInt(e.target.value) })}
+                  placeholder="Número máximo de usos"
+                  min="1"
                   required
                 />
               </div>
