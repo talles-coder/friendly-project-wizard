@@ -10,6 +10,7 @@ import Layout from "./components/Layout";
 import Coupons from "./pages/Coupons";
 import Users from "./pages/Users";
 import Affiliates from "./pages/Affiliates";
+import PublicAffiliateRegistration from "./pages/PublicAffiliateRegistration";
 import NotFound from "./pages/NotFound";
 import Dashboard from "./pages/Dashboard";
 
@@ -25,6 +26,7 @@ function App() {
           <BrowserRouter>
             <Routes>
               <Route path="/login" element={<Login />} />
+              <Route path="/cadastro-afiliado" element={<PublicAffiliateRegistration />} />
               
               <Route element={<Layout />}>
                 <Route path="/" element={<Dashboard />} />

@@ -12,6 +12,7 @@ import {
 import { Plus, Facebook, Instagram, Youtube, Edit, Trash2 } from "lucide-react";
 import { Affiliate } from "@/types";
 import { AffiliateForm } from "@/components/AffiliateForm";
+import { toast } from "@/hooks/use-toast";
 
 // Mock data for affiliates
 const MOCK_AFFILIATES: Affiliate[] = [
@@ -156,10 +157,26 @@ const Affiliates = () => {
     <div className="flex-1 space-y-4 p-8 pt-6">
       <div className="flex items-center justify-between">
         <h2 className="text-3xl font-bold tracking-tight">Afiliados</h2>
-        <Button onClick={handleNewAffiliate}>
-          <Plus className="mr-2 h-4 w-4" />
-          Novo Afiliado
-        </Button>
+        <div className="flex gap-2">
+          <Button onClick={handleNewAffiliate}>
+            <Plus className="mr-2 h-4 w-4" />
+            Novo Afiliado
+          </Button>
+          <Button 
+            variant="outline"
+            onClick={() => {
+              const baseUrl = window.location.origin;
+              const affiliateUrl = `${baseUrl}/cadastro-afiliado`;
+              navigator.clipboard.writeText(affiliateUrl);
+              toast({
+                title: "Link copiado!",
+                description: "O link de cadastro foi copiado para a área de transferência.",
+              });
+            }}
+          >
+            📋 Copiar Link de Cadastro
+          </Button>
+        </div>
       </div>
 
       <Card>
