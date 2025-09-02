@@ -433,7 +433,7 @@ const Coupons = () => {
               
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label htmlFor="rulesDiscountType">Tipo de Desconto</Label>
+                  <Label htmlFor="rulesDiscountType">Tipo de Desconto das Parcelas</Label>
                   <Select
                     value={editForm.availabilityRules?.discountType || ""}
                     onValueChange={(value) => setEditForm({ 
@@ -441,14 +441,14 @@ const Coupons = () => {
                       availabilityRules: { 
                         ...editForm.availabilityRules,
                         discountType: value,
-                        baseValue: undefined,
-                        limitValue: undefined,
-                        unitFilter: editForm.availabilityRules?.unitFilter || "Todos",
-                        courseFilter: editForm.availabilityRules?.courseFilter || "Todos",
-                        ingressFormFilter: editForm.availabilityRules?.ingressFormFilter || "Todos",
-                        userFilter: editForm.availabilityRules?.userFilter || "Todos",
-                        initialValidity: editForm.availabilityRules?.initialValidity || "",
-                        finalValidity: editForm.availabilityRules?.finalValidity || ""
+                        baseValue: value === "Nenhum" ? undefined : editForm.availabilityRules?.baseValue,
+                        limitValue: value === "Nenhum" ? undefined : editForm.availabilityRules?.limitValue,
+                        unitFilter: value === "Nenhum" ? "Todos" : editForm.availabilityRules?.unitFilter || "Todos",
+                        courseFilter: value === "Nenhum" ? "Todos" : editForm.availabilityRules?.courseFilter || "Todos",
+                        ingressFormFilter: value === "Nenhum" ? "Todos" : editForm.availabilityRules?.ingressFormFilter || "Todos",
+                        userFilter: value === "Nenhum" ? "Todos" : editForm.availabilityRules?.userFilter || "Todos",
+                        initialValidity: value === "Nenhum" ? "" : editForm.availabilityRules?.initialValidity || "",
+                        finalValidity: value === "Nenhum" ? "" : editForm.availabilityRules?.finalValidity || ""
                       } 
                     })}
                   >
@@ -456,6 +456,7 @@ const Coupons = () => {
                       <SelectValue placeholder="Selecione o tipo" />
                     </SelectTrigger>
                     <SelectContent>
+                      <SelectItem value="Nenhum">Nenhum</SelectItem>
                       <SelectItem value="Valor Fixo">Valor Fixo</SelectItem>
                       <SelectItem value="Valor Variável">Valor Variável</SelectItem>
                       <SelectItem value="Porcentagem Fixa">Porcentagem Fixa</SelectItem>
@@ -466,191 +467,265 @@ const Coupons = () => {
                   </Select>
                 </div>
 
-                {editForm.availabilityRules?.discountType && (
-                  <div className="space-y-2">
-                    <Label htmlFor="baseValue">
-                      {["Valor Variável", "Preço Variável"].includes(editForm.availabilityRules.discountType) 
-                        ? "Valor Mínimo" 
-                        : ["Porcentagem Variável"].includes(editForm.availabilityRules.discountType)
-                        ? "Porcentagem Mínima"
-                        : ["Valor Fixo", "Preço Fixo"].includes(editForm.availabilityRules.discountType)
-                        ? "Valor"
-                        : "Porcentagem"
-                      }
-                    </Label>
-                    <div className="relative">
+                {editForm.availabilityRules?.discountType && editForm.availabilityRules.discountType !== "Nenhum" && (
+                  <>
+                    <div className="space-y-2">
+                      <Label htmlFor="baseValue">
+                        {["Valor Variável", "Preço Variável"].includes(editForm.availabilityRules.discountType) 
+                          ? "Valor Mínimo" 
+                          : ["Porcentagem Variável"].includes(editForm.availabilityRules.discountType)
+                          ? "Porcentagem Mínima"
+                          : ["Valor Fixo", "Preço Fixo"].includes(editForm.availabilityRules.discountType)
+                          ? "Valor"
+                          : "Porcentagem"
+                        }
+                      </Label>
+                      <div className="relative">
+                        <Input
+                          id="baseValue"
+                          type="number"
+                          value={editForm.availabilityRules?.baseValue || ""}
+                          onChange={(e) => setEditForm({ 
+                            ...editForm, 
+                            availabilityRules: { 
+                              ...editForm.availabilityRules!,
+                              baseValue: parseFloat(e.target.value) 
+                            } 
+                          })}
+                          className="pr-12"
+                        />
+                        <div className="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-500">
+                          {["Valor Variável", "Valor Fixo", "Preço Fixo", "Preço Variável"].includes(editForm.availabilityRules.discountType) ? "R$" : "%"}
+                        </div>
+                      </div>
+                    </div>
+
+                    {["Valor Variável", "Porcentagem Variável", "Preço Variável"].includes(editForm.availabilityRules.discountType) && (
+                      <div className="space-y-2">
+                        <Label htmlFor="limitValue">
+                          {["Valor Variável", "Preço Variável"].includes(editForm.availabilityRules.discountType) 
+                            ? "Valor Máximo" 
+                            : "Porcentagem Máxima"
+                          }
+                        </Label>
+                        <div className="relative">
+                          <Input
+                            id="limitValue"
+                            type="number"
+                            value={editForm.availabilityRules?.limitValue || ""}
+                            onChange={(e) => setEditForm({ 
+                              ...editForm, 
+                              availabilityRules: { 
+                                ...editForm.availabilityRules!,
+                                limitValue: parseFloat(e.target.value) 
+                              } 
+                            })}
+                            className="pr-12"
+                          />
+                          <div className="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-500">
+                            {["Preço Fixo", "Preço Variável", "Valor Variável", "Valor Fixo"].includes(editForm.availabilityRules.discountType) ? "R$" : "%"}
+                          </div>
+                        </div>
+                      </div>
+                    )}
+
+                    <div className="space-y-2">
+                      <Label htmlFor="unitFilter">Unidade</Label>
+                      <div className="flex gap-2">
+                        <Select
+                          value={editForm.availabilityRules?.unitFilter || "Todos"}
+                          onValueChange={(value) => setEditForm({ 
+                            ...editForm, 
+                            availabilityRules: { 
+                              ...editForm.availabilityRules!,
+                              unitFilter: value,
+                              selectedUnits: value === "Todos" ? [] : editForm.availabilityRules?.selectedUnits
+                            } 
+                          })}
+                        >
+                          <SelectTrigger className="flex-1">
+                            <SelectValue placeholder="Selecione a unidade" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="Todos">Todos</SelectItem>
+                            <SelectItem value="Exceto">Exceto</SelectItem>
+                            <SelectItem value="Somente">Somente</SelectItem>
+                          </SelectContent>
+                        </Select>
+                        {(editForm.availabilityRules?.unitFilter === "Exceto" || editForm.availabilityRules?.unitFilter === "Somente") && (
+                          <Select
+                            value={editForm.availabilityRules?.selectedUnits?.[0] || ""}
+                            onValueChange={(value) => setEditForm({ 
+                              ...editForm, 
+                              availabilityRules: { 
+                                ...editForm.availabilityRules!,
+                                selectedUnits: [value]
+                              } 
+                            })}
+                          >
+                            <SelectTrigger className="flex-1">
+                              <SelectValue placeholder="Selecionar unidades..." />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="Unidade A">Unidade A</SelectItem>
+                              <SelectItem value="Unidade B">Unidade B</SelectItem>
+                              <SelectItem value="Unidade C">Unidade C</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        )}
+                      </div>
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label htmlFor="courseFilter">Curso</Label>
+                      <div className="flex gap-2">
+                        <Select
+                          value={editForm.availabilityRules?.courseFilter || "Todos"}
+                          onValueChange={(value) => setEditForm({ 
+                            ...editForm, 
+                            availabilityRules: { 
+                              ...editForm.availabilityRules!,
+                              courseFilter: value,
+                              selectedCourses: value === "Todos" ? [] : editForm.availabilityRules?.selectedCourses
+                            } 
+                          })}
+                        >
+                          <SelectTrigger className="flex-1">
+                            <SelectValue placeholder="Selecione o curso" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="Todos">Todos</SelectItem>
+                            <SelectItem value="Exceto">Exceto</SelectItem>
+                            <SelectItem value="Somente">Somente</SelectItem>
+                          </SelectContent>
+                        </Select>
+                        {(editForm.availabilityRules?.courseFilter === "Exceto" || editForm.availabilityRules?.courseFilter === "Somente") && (
+                          <Select
+                            value={editForm.availabilityRules?.selectedCourses?.[0] || ""}
+                            onValueChange={(value) => setEditForm({ 
+                              ...editForm, 
+                              availabilityRules: { 
+                                ...editForm.availabilityRules!,
+                                selectedCourses: [value]
+                              } 
+                            })}
+                          >
+                            <SelectTrigger className="flex-1">
+                              <SelectValue placeholder="Selecionar cursos..." />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="Curso de Medicina">Curso de Medicina</SelectItem>
+                              <SelectItem value="Curso de Direito">Curso de Direito</SelectItem>
+                              <SelectItem value="Curso de Engenharia">Curso de Engenharia</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        )}
+                      </div>
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label htmlFor="ingressFormFilter">Forma de Ingresso</Label>
+                      <div className="flex gap-2">
+                        <Select
+                          value={editForm.availabilityRules?.ingressFormFilter || "Todos"}
+                          onValueChange={(value) => setEditForm({ 
+                            ...editForm, 
+                            availabilityRules: { 
+                              ...editForm.availabilityRules!,
+                              ingressFormFilter: value,
+                              selectedIngressForms: value === "Todos" ? [] : editForm.availabilityRules?.selectedIngressForms
+                            } 
+                          })}
+                        >
+                          <SelectTrigger className="flex-1">
+                            <SelectValue placeholder="Selecione a forma de ingresso" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="Todos">Todos</SelectItem>
+                            <SelectItem value="Exceto">Exceto</SelectItem>
+                            <SelectItem value="Somente">Somente</SelectItem>
+                          </SelectContent>
+                        </Select>
+                        {(editForm.availabilityRules?.ingressFormFilter === "Exceto" || editForm.availabilityRules?.ingressFormFilter === "Somente") && (
+                          <Select
+                            value={editForm.availabilityRules?.selectedIngressForms?.[0] || ""}
+                            onValueChange={(value) => setEditForm({ 
+                              ...editForm, 
+                              availabilityRules: { 
+                                ...editForm.availabilityRules!,
+                                selectedIngressForms: [value]
+                              } 
+                            })}
+                          >
+                            <SelectTrigger className="flex-1">
+                              <SelectValue placeholder="Selecionar formas..." />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="ENEM">ENEM</SelectItem>
+                              <SelectItem value="Vestibular">Vestibular</SelectItem>
+                              <SelectItem value="Transferência">Transferência</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        )}
+                      </div>
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label htmlFor="userFilter">Usuários</Label>
+                      <Select
+                        value={editForm.availabilityRules?.userFilter || "Todos"}
+                        onValueChange={(value) => setEditForm({ 
+                          ...editForm, 
+                          availabilityRules: { 
+                            ...editForm.availabilityRules!,
+                            userFilter: value,
+                            selectedUsers: value === "Todos" ? [] : editForm.availabilityRules?.selectedUsers
+                          } 
+                        })}
+                      >
+                        <SelectTrigger>
+                          <SelectValue placeholder="Selecione os usuários" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="Todos">Todos</SelectItem>
+                          <SelectItem value="Específicos">Específicos</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label htmlFor="initialValidity">Início da Vigência</Label>
                       <Input
-                        id="baseValue"
-                        type="number"
-                        value={editForm.availabilityRules?.baseValue || ""}
+                        id="initialValidity"
+                        type="date"
+                        value={editForm.availabilityRules?.initialValidity || ""}
                         onChange={(e) => setEditForm({ 
                           ...editForm, 
                           availabilityRules: { 
                             ...editForm.availabilityRules!,
-                            baseValue: parseFloat(e.target.value) 
+                            initialValidity: e.target.value 
                           } 
                         })}
-                        className="pr-12"
                       />
-                      <div className="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-500">
-                        {["Valor Variável", "Valor Fixo", "Preço Fixo", "Preço Variável"].includes(editForm.availabilityRules.discountType) ? "R$" : "%"}
-                      </div>
                     </div>
-                  </div>
-                )}
 
-                {["Valor Variável", "Porcentagem Variável", "Preço Variável"].includes(editForm.availabilityRules?.discountType || "") && (
-                  <div className="space-y-2">
-                    <Label htmlFor="limitValue">
-                      {["Valor Variável", "Preço Variável"].includes(editForm.availabilityRules!.discountType) 
-                        ? "Valor Máximo" 
-                        : "Porcentagem Máxima"
-                      }
-                    </Label>
-                    <div className="relative">
+                    <div className="space-y-2">
+                      <Label htmlFor="finalValidity">Final da Vigência</Label>
                       <Input
-                        id="limitValue"
-                        type="number"
-                        value={editForm.availabilityRules?.limitValue || ""}
+                        id="finalValidity"
+                        type="date"
+                        value={editForm.availabilityRules?.finalValidity || ""}
                         onChange={(e) => setEditForm({ 
                           ...editForm, 
                           availabilityRules: { 
                             ...editForm.availabilityRules!,
-                            limitValue: parseFloat(e.target.value) 
+                            finalValidity: e.target.value 
                           } 
                         })}
-                        className="pr-12"
                       />
-                      <div className="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-500">
-                        {["Preço Fixo", "Preço Variável", "Valor Variável", "Valor Fixo"].includes(editForm.availabilityRules!.discountType) ? "R$" : "%"}
-                      </div>
                     </div>
-                  </div>
+                  </>
                 )}
-
-                <div className="space-y-2">
-                  <Label htmlFor="unitFilter">Unidade</Label>
-                  <Select
-                    value={editForm.availabilityRules?.unitFilter || "Todos"}
-                    onValueChange={(value) => setEditForm({ 
-                      ...editForm, 
-                      availabilityRules: { 
-                        ...editForm.availabilityRules!,
-                        unitFilter: value,
-                        selectedUnits: value === "Todos" ? [] : editForm.availabilityRules?.selectedUnits
-                      } 
-                    })}
-                  >
-                    <SelectTrigger>
-                      <SelectValue placeholder="Selecione a unidade" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="Todos">Todos</SelectItem>
-                      <SelectItem value="Específicos">Específicos</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="courseFilter">Curso</Label>
-                  <Select
-                    value={editForm.availabilityRules?.courseFilter || "Todos"}
-                    onValueChange={(value) => setEditForm({ 
-                      ...editForm, 
-                      availabilityRules: { 
-                        ...editForm.availabilityRules!,
-                        courseFilter: value,
-                        selectedCourses: value === "Todos" ? [] : editForm.availabilityRules?.selectedCourses
-                      } 
-                    })}
-                  >
-                    <SelectTrigger>
-                      <SelectValue placeholder="Selecione o curso" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="Todos">Todos</SelectItem>
-                      <SelectItem value="Específicos">Específicos</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="ingressFormFilter">Forma de Ingresso</Label>
-                  <Select
-                    value={editForm.availabilityRules?.ingressFormFilter || "Todos"}
-                    onValueChange={(value) => setEditForm({ 
-                      ...editForm, 
-                      availabilityRules: { 
-                        ...editForm.availabilityRules!,
-                        ingressFormFilter: value,
-                        selectedIngressForms: value === "Todos" ? [] : editForm.availabilityRules?.selectedIngressForms
-                      } 
-                    })}
-                  >
-                    <SelectTrigger>
-                      <SelectValue placeholder="Selecione a forma de ingresso" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="Todos">Todos</SelectItem>
-                      <SelectItem value="Específicos">Específicos</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="userFilter">Usuários</Label>
-                  <Select
-                    value={editForm.availabilityRules?.userFilter || "Todos"}
-                    onValueChange={(value) => setEditForm({ 
-                      ...editForm, 
-                      availabilityRules: { 
-                        ...editForm.availabilityRules!,
-                        userFilter: value,
-                        selectedUsers: value === "Todos" ? [] : editForm.availabilityRules?.selectedUsers
-                      } 
-                    })}
-                  >
-                    <SelectTrigger>
-                      <SelectValue placeholder="Selecione os usuários" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="Todos">Todos</SelectItem>
-                      <SelectItem value="Específicos">Específicos</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="initialValidity">Início da Vigência</Label>
-                  <Input
-                    id="initialValidity"
-                    type="date"
-                    value={editForm.availabilityRules?.initialValidity || ""}
-                    onChange={(e) => setEditForm({ 
-                      ...editForm, 
-                      availabilityRules: { 
-                        ...editForm.availabilityRules!,
-                        initialValidity: e.target.value 
-                      } 
-                    })}
-                  />
-                </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="finalValidity">Final da Vigência</Label>
-                  <Input
-                    id="finalValidity"
-                    type="date"
-                    value={editForm.availabilityRules?.finalValidity || ""}
-                    onChange={(e) => setEditForm({ 
-                      ...editForm, 
-                      availabilityRules: { 
-                        ...editForm.availabilityRules!,
-                        finalValidity: e.target.value 
-                      } 
-                    })}
-                  />
-                </div>
               </div>
             </div>
 
