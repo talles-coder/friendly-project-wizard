@@ -145,6 +145,8 @@ const Coupons = () => {
   const [affiliates] = useState<Affiliate[]>(MOCK_AFFILIATES);
   const [currentPage, setCurrentPage] = useState(1);
   const [activeTab, setActiveTab] = useState("general");
+  const [codeError, setCodeError] = useState("");
+  const [childCodeErrors, setChildCodeErrors] = useState<{[key: string]: string}>({});
   const itemsPerPage = 10;
   
   const { user } = useAuth();
@@ -175,12 +177,78 @@ const Coupons = () => {
     localStorage.setItem("coupons", JSON.stringify(updatedCoupons));
   };
 
+  // Valida se um código de cupom é único
+  const validateCouponCode = (code: string, excludeId?: string) => {
+    if (!code.trim()) return "";
+    
+    // Verifica duplicata entre cupons base
+    const existingBaseCoupon = coupons.find(
+      c => c.code.toLowerCase() === code.toLowerCase() && c.id !== excludeId
+    );
+    
+    if (existingBaseCoupon) {
+      return "Este código já está sendo usado por outro cupom base";
+    }
+    
+    // Verifica duplicata entre todos os cupons filhos existentes
+    const allChildCoupons = coupons.flatMap(c => c.childCoupons || []);
+    const existingChildCoupon = allChildCoupons.find(
+      child => child.couponCode.toLowerCase() === code.toLowerCase()
+    );
+    
+    if (existingChildCoupon) {
+      return "Este código já está sendo usado por um cupom filho";
+    }
+    
+    return "";
+  };
+
+  // Valida se um código de cupom filho é único
+  const validateChildCouponCode = (code: string, excludeChildId?: string) => {
+    if (!code.trim()) return "";
+    
+    // Verifica duplicata entre cupons base
+    const existingBaseCoupon = coupons.find(
+      c => c.code.toLowerCase() === code.toLowerCase()
+    );
+    
+    if (existingBaseCoupon) {
+      return "Este código já está sendo usado por um cupom base";
+    }
+    
+    // Verifica duplicata entre cupons filhos atuais
+    const duplicateInCurrent = childCoupons.find(
+      child => child.couponCode.toLowerCase() === code.toLowerCase() && child.id !== excludeChildId
+    );
+    
+    if (duplicateInCurrent) {
+      return "Este código já está sendo usado por outro cupom filho";
+    }
+    
+    // Verifica duplicata entre todos os cupons filhos de outros cupons
+    const otherChildCoupons = coupons
+      .filter(c => c.id !== selectedCoupon?.id)
+      .flatMap(c => c.childCoupons || []);
+    
+    const existingChildCoupon = otherChildCoupons.find(
+      child => child.couponCode.toLowerCase() === code.toLowerCase()
+    );
+    
+    if (existingChildCoupon) {
+      return "Este código já está sendo usado por um cupom filho de outro cupom";
+    }
+    
+    return "";
+  };
+
   const handleEdit = (coupon: Coupon) => {
     setSelectedCoupon(coupon);
     setEditForm({ ...coupon });
     setChildCoupons(coupon.childCoupons || []);
     setCurrentPage(1);
     setActiveTab("general");
+    setCodeError("");
+    setChildCodeErrors({});
     setIsEditDialogOpen(true);
   };
 
@@ -200,13 +268,34 @@ const Coupons = () => {
   const handleEditSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (selectedCoupon && editForm) {
-      // Validate unique coupon code among active coupons
-      const existingActiveCoupon = coupons.find(
-        c => c.code === editForm.code && c.isActive && c.id !== selectedCoupon.id
-      );
-      
-      if (existingActiveCoupon && editForm.isActive) {
-        alert("Já existe um cupom ativo com este código. Use um código diferente.");
+      // Valida código único
+      const codeValidation = validateCouponCode(editForm.code || "", selectedCoupon.id);
+      if (codeValidation) {
+        setCodeError(codeValidation);
+        toast({
+          title: "Erro de validação",
+          description: codeValidation,
+          variant: "destructive",
+        });
+        return;
+      }
+
+      // Valida códigos dos cupons filhos
+      const childErrors: {[key: string]: string} = {};
+      for (const child of childCoupons) {
+        const error = validateChildCouponCode(child.couponCode, child.id);
+        if (error) {
+          childErrors[child.id] = error;
+        }
+      }
+
+      if (Object.keys(childErrors).length > 0) {
+        setChildCodeErrors(childErrors);
+        toast({
+          title: "Erro de validação",
+          description: "Existem códigos duplicados nos cupons filhos",
+          variant: "destructive",
+        });
         return;
       }
 
@@ -221,19 +310,42 @@ const Coupons = () => {
       saveCoupons(updatedCoupons);
       setIsEditDialogOpen(false);
       setChildCoupons([]);
+      setCodeError("");
+      setChildCodeErrors({});
     }
   };
 
   const handleCreateSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (editForm) {
-      // Validate unique coupon code among active coupons
-      const existingActiveCoupon = coupons.find(
-        c => c.code === editForm.code && c.isActive && c.id !== selectedCoupon?.id
-      );
-      
-      if (existingActiveCoupon) {
-        alert("Já existe um cupom ativo com este código. Use um código diferente.");
+      // Valida código único
+      const codeValidation = validateCouponCode(editForm.code || "");
+      if (codeValidation) {
+        setCodeError(codeValidation);
+        toast({
+          title: "Erro de validação",
+          description: codeValidation,
+          variant: "destructive",
+        });
+        return;
+      }
+
+      // Valida códigos dos cupons filhos
+      const childErrors: {[key: string]: string} = {};
+      for (const child of childCoupons) {
+        const error = validateChildCouponCode(child.couponCode, child.id);
+        if (error) {
+          childErrors[child.id] = error;
+        }
+      }
+
+      if (Object.keys(childErrors).length > 0) {
+        setChildCodeErrors(childErrors);
+        toast({
+          title: "Erro de validação",
+          description: "Existem códigos duplicados nos cupons filhos",
+          variant: "destructive",
+        });
         return;
       }
 
@@ -260,6 +372,8 @@ const Coupons = () => {
       setIsCreateDialogOpen(false);
       setEditForm({});
       setChildCoupons([]);
+      setCodeError("");
+      setChildCodeErrors({});
     }
   };
 
@@ -287,6 +401,24 @@ const Coupons = () => {
     setChildCoupons(childCoupons.map(child => 
       child.id === id ? { ...child, ...updates } : child
     ));
+    
+    // Limpa o erro do código quando ele é alterado
+    if (updates.couponCode !== undefined) {
+      setChildCodeErrors(prev => {
+        const newErrors = { ...prev };
+        delete newErrors[id];
+        return newErrors;
+      });
+    }
+  };
+
+  const handleCouponCodeChange = (code: string) => {
+    setEditForm({ ...editForm, code: code.toUpperCase() });
+    setCodeError(""); // Limpa o erro quando o código é alterado
+  };
+
+  const handleChildCouponCodeChange = (childId: string, code: string) => {
+    updateChildCoupon(childId, { couponCode: code.toUpperCase() });
   };
 
   const copyToClipboard = async (couponCode: string) => {
@@ -336,6 +468,8 @@ const Coupons = () => {
               setChildCoupons([]);
               setCurrentPage(1);
               setActiveTab("general");
+              setCodeError("");
+              setChildCodeErrors({});
               setIsCreateDialogOpen(true);
             }}
             className="bg-blue-600 hover:bg-blue-700"
@@ -431,10 +565,14 @@ const Coupons = () => {
                     <Input
                       id="code"
                       value={editForm.code || ""}
-                      onChange={(e) => setEditForm({ ...editForm, code: e.target.value.toUpperCase() })}
+                      onChange={(e) => handleCouponCodeChange(e.target.value)}
                       placeholder="Ex: DESCONTO50"
+                      className={codeError ? "border-red-500" : ""}
                       required
                     />
+                    {codeError && (
+                      <p className="text-sm text-red-600">{codeError}</p>
+                    )}
                   </div>
 
                   <div className="space-y-2">
@@ -883,13 +1021,17 @@ const Coupons = () => {
                                   </Select>
                                 </TableCell>
                                 <TableCell>{child.affiliateName}</TableCell>
-                                <TableCell>
-                                  <Input
-                                    value={child.couponCode}
-                                    onChange={(e) => updateChildCoupon(child.id, { couponCode: e.target.value.toUpperCase() })}
-                                    placeholder="Código do cupom"
-                                  />
-                                </TableCell>
+                                 <TableCell>
+                                   <Input
+                                     value={child.couponCode}
+                                     onChange={(e) => handleChildCouponCodeChange(child.id, e.target.value)}
+                                     placeholder="Código do cupom"
+                                     className={childCodeErrors[child.id] ? "border-red-500" : ""}
+                                   />
+                                   {childCodeErrors[child.id] && (
+                                     <p className="text-xs text-red-600 mt-1">{childCodeErrors[child.id]}</p>
+                                   )}
+                                 </TableCell>
                                  <TableCell className="text-right">
                                    <div className="flex justify-end gap-1">
                                      <Button
@@ -980,6 +1122,8 @@ const Coupons = () => {
                 onClick={() => {
                   setIsCreateDialogOpen(false);
                   setIsEditDialogOpen(false);
+                  setCodeError("");
+                  setChildCodeErrors({});
                 }}
               >
                 Cancelar
