@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Coupon } from "@/types";
+import { Coupon, ChildCoupon, Affiliate } from "@/types";
 import { Button } from "@/components/ui/button";
 import {
   Table,
@@ -9,7 +9,8 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Pencil, Trash2, Plus } from "lucide-react";
+import { Pencil, Trash2, Plus, X } from "lucide-react";
+import { MOCK_AFFILIATES } from "@/services/api/mockData";
 import { 
   Dialog, 
   DialogContent, 
@@ -130,6 +131,8 @@ const Coupons = () => {
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
   const [editForm, setEditForm] = useState<Partial<Coupon>>({});
+  const [childCoupons, setChildCoupons] = useState<ChildCoupon[]>([]);
+  const [affiliates] = useState<Affiliate[]>(MOCK_AFFILIATES);
   
   const { user } = useAuth();
   const isAdmin = user?.role === "admin";
@@ -155,6 +158,7 @@ const Coupons = () => {
   const handleEdit = (coupon: Coupon) => {
     setSelectedCoupon(coupon);
     setEditForm({ ...coupon });
+    setChildCoupons(coupon.childCoupons || []);
     setIsEditDialogOpen(true);
   };
 
@@ -185,10 +189,16 @@ const Coupons = () => {
       }
 
       const updatedCoupons = coupons.map((c) =>
-        c.id === selectedCoupon.id ? { ...c, ...editForm, updatedAt: new Date().toISOString() } : c
+        c.id === selectedCoupon.id ? { 
+          ...c, 
+          ...editForm, 
+          childCoupons, 
+          updatedAt: new Date().toISOString() 
+        } : c
       );
       saveCoupons(updatedCoupons);
       setIsEditDialogOpen(false);
+      setChildCoupons([]);
     }
   };
 
@@ -222,16 +232,49 @@ const Coupons = () => {
         createdAt: now,
         updatedAt: now,
         createdBy: user?.name || "Unknown",
+        childCoupons,
       };
       saveCoupons([...coupons, newCoupon]);
       setIsCreateDialogOpen(false);
       setEditForm({});
+      setChildCoupons([]);
     }
   };
 
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
     return date.toLocaleDateString("pt-BR");
+  };
+
+  // Funções para gerenciar cupons filhos
+  const addChildCoupon = () => {
+    const newChildCoupon: ChildCoupon = {
+      id: Date.now().toString(),
+      affiliateId: "",
+      affiliateName: "",
+      couponCode: ""
+    };
+    setChildCoupons([...childCoupons, newChildCoupon]);
+  };
+
+  const removeChildCoupon = (id: string) => {
+    setChildCoupons(childCoupons.filter(child => child.id !== id));
+  };
+
+  const updateChildCoupon = (id: string, updates: Partial<ChildCoupon>) => {
+    setChildCoupons(childCoupons.map(child => 
+      child.id === id ? { ...child, ...updates } : child
+    ));
+  };
+
+  const handleAffiliateChange = (childId: string, affiliateId: string) => {
+    const affiliate = affiliates.find(aff => aff.id === affiliateId);
+    if (affiliate) {
+      updateChildCoupon(childId, {
+        affiliateId,
+        affiliateName: affiliate.name
+      });
+    }
   };
 
   return (
@@ -242,6 +285,7 @@ const Coupons = () => {
           <Button 
             onClick={() => {
               setEditForm({});
+              setChildCoupons([]);
               setIsCreateDialogOpen(true);
             }}
             className="bg-blue-600 hover:bg-blue-700"
@@ -256,7 +300,7 @@ const Coupons = () => {
           <TableHeader>
             <TableRow>
               <TableHead>Código</TableHead>
-              <TableHead>Nome do Cupom</TableHead>
+              <TableHead>Cupom Base</TableHead>
               <TableHead>Quantidade Máxima</TableHead>
               <TableHead>Usos</TableHead>
               <TableHead>Validade</TableHead>
@@ -336,7 +380,7 @@ const Coupons = () => {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="name">Nome do Cupom</Label>
+                <Label htmlFor="name">Cupom Base</Label>
                 <Input
                   id="name"
                   value={editForm.name || ""}
@@ -425,6 +469,78 @@ const Coupons = () => {
                 onCheckedChange={(checked) => setEditForm({ ...editForm, isActive: checked })}
               />
               <Label htmlFor="isActive">Ativo</Label>
+            </div>
+
+            {/* Cupons Filhos */}
+            <div className="space-y-4 pt-4 border-t">
+              <div className="flex justify-between items-center">
+                <h3 className="text-lg font-semibold text-gray-900">Cupons Filhos</h3>
+                <Button 
+                  type="button"
+                  onClick={addChildCoupon}
+                  className="bg-green-600 hover:bg-green-700"
+                  size="sm"
+                >
+                  <Plus className="h-4 w-4 mr-2" />
+                  Adicionar
+                </Button>
+              </div>
+              
+              {childCoupons.length > 0 && (
+                <div className="rounded-md border">
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead>ID do Afiliado</TableHead>
+                        <TableHead>Nome do Afiliado</TableHead>
+                        <TableHead>Código do Cupom</TableHead>
+                        <TableHead className="text-right">Ações</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {childCoupons.map((child) => (
+                        <TableRow key={child.id}>
+                          <TableCell>
+                            <Select
+                              value={child.affiliateId}
+                              onValueChange={(value) => handleAffiliateChange(child.id, value)}
+                            >
+                              <SelectTrigger className="w-full">
+                                <SelectValue placeholder="Selecione um afiliado" />
+                              </SelectTrigger>
+                              <SelectContent>
+                                {affiliates.map((affiliate) => (
+                                  <SelectItem key={affiliate.id} value={affiliate.id}>
+                                    {affiliate.internalCode}
+                                  </SelectItem>
+                                ))}
+                              </SelectContent>
+                            </Select>
+                          </TableCell>
+                          <TableCell>{child.affiliateName}</TableCell>
+                          <TableCell>
+                            <Input
+                              value={child.couponCode}
+                              onChange={(e) => updateChildCoupon(child.id, { couponCode: e.target.value.toUpperCase() })}
+                              placeholder="Código do cupom"
+                            />
+                          </TableCell>
+                          <TableCell className="text-right">
+                            <Button
+                              type="button"
+                              variant="ghost"
+                              size="icon"
+                              onClick={() => removeChildCoupon(child.id)}
+                            >
+                              <X className="h-4 w-4 text-red-600" />
+                            </Button>
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </div>
+              )}
             </div>
 
             {/* Regras de Disponibilização */}

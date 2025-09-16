@@ -8,6 +8,13 @@ export interface User {
   role: "admin" | "afiliado" | "polo";
 }
 
+export interface ChildCoupon {
+  id: string;
+  affiliateId: string;
+  affiliateName: string;
+  couponCode: string;
+}
+
 export interface Coupon {
   id: string;
   code: string;
@@ -24,6 +31,8 @@ export interface Coupon {
   createdAt: string;
   updatedAt: string;
   createdBy: string;
+  // Cupons Filhos
+  childCoupons?: ChildCoupon[];
   // Availability Rules
   availabilityRules?: {
     discountType: string;
