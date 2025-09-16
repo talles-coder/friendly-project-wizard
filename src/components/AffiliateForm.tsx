@@ -219,7 +219,7 @@ export const AffiliateForm = ({ affiliate, onSave, onCancel }: AffiliateFormProp
           {/* Dados Pessoais e de Contato */}
           <Card>
             <CardHeader>
-              <CardTitle>📌 Dados Pessoais e de Contato</CardTitle>
+              <CardTitle>Dados Pessoais e de Contato</CardTitle>
               <CardDescription>
                 Informações básicas e dados de contato do afiliado
               </CardDescription>
@@ -450,7 +450,7 @@ export const AffiliateForm = ({ affiliate, onSave, onCancel }: AffiliateFormProp
           {/* Informações do Programa de Afiliados */}
           <Card>
             <CardHeader>
-              <CardTitle>📌 Informações do Programa de Afiliados</CardTitle>
+              <CardTitle>Informações do Programa de Afiliados</CardTitle>
               <CardDescription>
                 Dados específicos da parceria e comissões
               </CardDescription>
@@ -574,7 +574,7 @@ export const AffiliateForm = ({ affiliate, onSave, onCancel }: AffiliateFormProp
           {/* Dados para Repasse */}
           <Card>
             <CardHeader>
-              <CardTitle>📌 Dados para Repasse</CardTitle>
+              <CardTitle>Dados para Repasse</CardTitle>
               <CardDescription>
                 Informações para pagamento das comissões
               </CardDescription>

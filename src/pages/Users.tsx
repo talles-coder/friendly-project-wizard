@@ -377,7 +377,10 @@ const Users = () => {
                 required
               >
                 <option value="admin">Administrador</option>
-                <option value="afiliado">Afiliado</option>
+                <option value="afiliado-interno">Afiliado</option>
+                <option value="embaixador">Embaixador</option>
+                <option value="Colaborador">Colaborador</option>
+                <option value="polo">Polo</option>
               </select>
             </div>
             <DialogFooter>

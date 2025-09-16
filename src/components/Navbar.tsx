@@ -10,7 +10,7 @@ const Navbar = () => {
     <header className="bg-white border-b border-gray-200 shadow-sm">
       <div className="container mx-auto px-4 h-16 flex items-center justify-between">
         <div className="flex items-center">
-          <h1 className="text-xl font-bold text-blue-600">Sistema de Afiliados</h1>
+          <h1 className="text-xl font-bold text-blue-600">Afiliados UniFECAF</h1>
         </div>
 
         <div className="flex items-center gap-4">
