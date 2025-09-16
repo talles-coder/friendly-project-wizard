@@ -9,7 +9,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Pencil, Trash2, Plus, X } from "lucide-react";
+import { Pencil, Trash2, Plus, X, Link } from "lucide-react";
 import { MOCK_AFFILIATES } from "@/services/api/mockData";
 import { 
   Dialog, 
@@ -40,6 +40,7 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from "@/components/ui/pagination";
+import { useToast } from "@/hooks/use-toast";
 
 // Gera dados de exemplo atualizados
 const generateMockCoupons = (): Coupon[] => {
@@ -147,6 +148,7 @@ const Coupons = () => {
   const itemsPerPage = 10;
   
   const { user } = useAuth();
+  const { toast } = useToast();
   const isAdmin = user?.role === "admin";
 
   // Paginação dos cupons filhos
@@ -285,6 +287,32 @@ const Coupons = () => {
     setChildCoupons(childCoupons.map(child => 
       child.id === id ? { ...child, ...updates } : child
     ));
+  };
+
+  const copyToClipboard = async (couponCode: string) => {
+    if (!couponCode) {
+      toast({
+        title: "Erro",
+        description: "Código do cupom não pode estar vazio",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    try {
+      const link = `http://teste/?cupom=${couponCode}`;
+      await navigator.clipboard.writeText(link);
+      toast({
+        title: "Link copiado!",
+        description: "O link do cupom foi copiado para o clipboard",
+      });
+    } catch (error) {
+      toast({
+        title: "Erro",
+        description: "Não foi possível copiar o link",
+        variant: "destructive",
+      });
+    }
   };
 
   const handleAffiliateChange = (childId: string, affiliateId: string) => {
@@ -862,16 +890,27 @@ const Coupons = () => {
                                     placeholder="Código do cupom"
                                   />
                                 </TableCell>
-                                <TableCell className="text-right">
-                                  <Button
-                                    type="button"
-                                    variant="ghost"
-                                    size="icon"
-                                    onClick={() => removeChildCoupon(child.id)}
-                                  >
-                                    <X className="h-4 w-4 text-red-600" />
-                                  </Button>
-                                </TableCell>
+                                 <TableCell className="text-right">
+                                   <div className="flex justify-end gap-1">
+                                     <Button
+                                       type="button"
+                                       variant="ghost"
+                                       size="icon"
+                                       onClick={() => copyToClipboard(child.couponCode)}
+                                       disabled={!child.couponCode}
+                                     >
+                                       <Link className="h-4 w-4 text-blue-600" />
+                                     </Button>
+                                     <Button
+                                       type="button"
+                                       variant="ghost"
+                                       size="icon"
+                                       onClick={() => removeChildCoupon(child.id)}
+                                     >
+                                       <X className="h-4 w-4 text-red-600" />
+                                     </Button>
+                                   </div>
+                                 </TableCell>
                               </TableRow>
                             ))}
                           </TableBody>
