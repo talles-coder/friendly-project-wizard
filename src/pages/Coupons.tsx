@@ -707,11 +707,11 @@ const Coupons = () => {
                         <SelectContent>
                           <SelectItem value="Nenhum">Nenhum</SelectItem>
                           <SelectItem value="Valor Fixo">Valor Fixo</SelectItem>
-                          <SelectItem value="Valor Variável">Valor Variável</SelectItem>
+                          {/* <SelectItem value="Valor Variável">Valor Variável</SelectItem> */}
                           <SelectItem value="Porcentagem Fixa">Porcentagem Fixa</SelectItem>
-                          <SelectItem value="Porcentagem Variável">Porcentagem Variável</SelectItem>
+                          {/* <SelectItem value="Porcentagem Variável">Porcentagem Variável</SelectItem> */}
                           <SelectItem value="Preço Fixo">Preço Fixo</SelectItem>
-                          <SelectItem value="Preço Variável">Preço Variável</SelectItem>
+                          {/* <SelectItem value="Preço Variável">Preço Variável</SelectItem> */}
                         </SelectContent>
                       </Select>
                     </div>
