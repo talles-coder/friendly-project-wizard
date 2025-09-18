@@ -432,7 +432,7 @@ const Coupons = () => {
     }
 
     try {
-      const link = `http://teste/?cupom=${couponCode}`;
+      const link = `https://matricula.unifecaf.com.br/?cupom=${couponCode}`;
       await navigator.clipboard.writeText(link);
       toast({
         title: "Link copiado!",
@@ -586,7 +586,7 @@ const Coupons = () => {
                   </div>
 
                   <div className="space-y-2">
-                    <Label htmlFor="discountType">Tipo de Desconto</Label>
+                    <Label htmlFor="discountType">Tipo de Desconto Taxa de Adesão</Label>
                     <Select
                       value={editForm.discountType || "percentage"}
                       onValueChange={(value) => setEditForm({ ...editForm, discountType: value as "percentage" | "fixed" })}
@@ -602,7 +602,7 @@ const Coupons = () => {
                   </div>
 
                   <div className="space-y-2">
-                    <Label htmlFor="discountValue">Valor do Desconto</Label>
+                    <Label htmlFor="discountValue">Desconto Taxa de Adesão</Label>
                     <Input
                       id="discountValue"
                       type="number"
@@ -613,7 +613,7 @@ const Coupons = () => {
                   </div>
 
                   <div className="space-y-2">
-                    <Label htmlFor="availableQuantity">Quantidade Máxima (Utilizações)</Label>
+                    <Label htmlFor="availableQuantity">Quantidade Máxima de Utilizações</Label>
                     <Input
                       id="availableQuantity"
                       type="number"
@@ -665,6 +665,15 @@ const Coupons = () => {
                     onCheckedChange={(checked) => setEditForm({ ...editForm, isActive: checked })}
                   />
                   <Label htmlFor="isActive">Ativo</Label>
+                </div>
+
+                <div className="flex items-center space-x-2">
+                  <Switch
+                    id="uniqueByPerson"
+                    checked={editForm.isActive ?? true}
+                    onCheckedChange={(checked) => setEditForm({ ...editForm,isActive: checked })}
+                  />
+                  <Label htmlFor="uniqueByPerson">Uso Unico por Pessoa</Label>
                 </div>
 
                 {/* Regras de Disponibilização */}
