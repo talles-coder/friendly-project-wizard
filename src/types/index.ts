@@ -1,11 +1,13 @@
-
 export interface User {
   id: string;
   name: string;
   email: string;
-  cpf: string;
-  phone: string;
+  cpf?: string;
+  phone?: string;
   role: "admin" | "afiliado" | "polo";
+  status?: string;
+  createdAt?: string;
+  updatedAt?: string;
 }
 
 export interface ChildCoupon {
@@ -25,9 +27,12 @@ export interface Coupon {
   subscriptionDiscount: number;
   availableQuantity: number;
   usedCount: number;
+  minPurchaseAmount?: number;
   startDate: string;
+  validFrom?: string;
   validUntil: string;
   isActive: boolean;
+  affiliateId?: string;
   createdAt: string;
   updatedAt: string;
   createdBy: string;
@@ -53,6 +58,22 @@ export interface Coupon {
   };
 }
 
+export interface BankData {
+  repasseType?: 'pix' | 'bank_data';
+  // Campos PIX
+  pixKey?: string;
+  pixName?: string;
+  pixBank?: string;
+  // Campos bancários
+  bankCode: string;
+  bankName: string;
+  agency: string;
+  account: string;
+  // Novos campos adicionados
+  bankAgency?: string;
+  bankAccount?: string;
+}
+
 export interface Affiliate {
   id: string;
   name: string;
@@ -69,9 +90,11 @@ export interface Affiliate {
     zipCode?: string;
   };
   internalCode: string;
+  affiliateCode?: string;
   partnershipStartDate: string;
   commissionRate: number;
   commissionType: "percentage" | "fixed";
+  status?: string;
   notes?: string;
   paymentType: "pix" | "bank";
   pixData?: {
@@ -79,18 +102,15 @@ export interface Affiliate {
     fullName: string;
     bank: string;
   };
-  bankData?: {
-    bankCode: string;
-    bankName: string;
-    agency: string;
-    account: string;
-  };
+  bankData?: BankData;
   socialNetworks: {
     facebook?: string;
     tiktok?: string;
     instagram?: string;
     youtube?: string;
   };
+  createdAt?: string;
+  updatedAt?: string;
 }
 
 export interface DashboardData {

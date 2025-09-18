@@ -1,7 +1,7 @@
 // Configuração da API
 export const API_CONFIG = {
   // Mudar para true quando quiser usar o backend real
-  USE_MOCK: true,
+  USE_MOCK: false,
   
   // URL base do seu backend (quando for implementado)
   BASE_URL: process.env.NODE_ENV === 'production' 

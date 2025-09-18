@@ -1,8 +1,17 @@
 // Exportação centralizada de todos os serviços de API
-export { usersService } from './usersService';
-export { couponsService } from './couponsService';
-export { affiliatesService } from './affiliatesService';
-export { dashboardService } from './dashboardService';
+import { API_CONFIG } from './config';
+
+// Importar serviços baseado na configuração
+const servicesModule = API_CONFIG.USE_MOCK 
+  ? import('./mockServices') 
+  : import('./supabaseServices');
+
+// Reexportar serviços dinamicamente
+export const usersService = (await servicesModule).usersService;
+export const couponsService = (await servicesModule).couponsService;
+export const affiliatesService = (await servicesModule).affiliatesService;
+export const dashboardService = (await servicesModule).dashboardService;
+
 export { API_CONFIG, apiClient } from './config';
 export type { ApiResponse, PaginatedResponse, ApiError } from './config';
 
