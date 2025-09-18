@@ -59,13 +59,35 @@ const formSchema = z.object({
   }),
   expectedCommissionRate: z.coerce.number().min(0, "Comissão esperada deve ser maior que 0"),
   notes: z.string().optional(),
-  pixKey: z.string().min(1, "Chave Pix é obrigatória"),
+  paymentType: z.enum(["pix", "bank"], {
+    required_error: "Tipo de repasse é obrigatório",
+  }),
+  // Campos PIX
+  pixKey: z.string().optional(),
+  pixFullName: z.string().optional(),
+  pixBank: z.string().optional(),
+  // Campos bancários
+  bankCode: z.string().optional(),
+  bankName: z.string().optional(),
+  agency: z.string().optional(),
+  account: z.string().optional(),
   facebook: z.string().optional(),
   instagram: z.string().optional(),
   tiktok: z.string().optional(),
   youtube: z.string().optional(),
   experience: z.string().min(10, "Descreva sua experiência (mínimo 10 caracteres)"),
   motivation: z.string().min(10, "Conte sua motivação (mínimo 10 caracteres)"),
+}).refine((data) => {
+  if (data.paymentType === "pix") {
+    return data.pixKey && data.pixFullName && data.pixBank;
+  }
+  if (data.paymentType === "bank") {
+    return data.bankCode && data.bankName && data.agency && data.account;
+  }
+  return true;
+}, {
+  message: "Preencha todos os campos obrigatórios para o tipo de repasse selecionado",
+  path: ["paymentType"],
 });
 
 type FormData = z.infer<typeof formSchema>;
@@ -600,26 +622,157 @@ export default function PublicAffiliateRegistration() {
                   Como você gostaria de receber as comissões?
                 </CardDescription>
               </CardHeader>
-              <CardContent>
+              <CardContent className="space-y-4">
                 <FormField
                   control={form.control}
-                  name="pixKey"
+                  name="paymentType"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Chave Pix *</FormLabel>
-                      <FormControl>
-                        <Input
-                          placeholder="CPF, CNPJ, e-mail, telefone ou chave aleatória"
-                          {...field}
-                        />
-                      </FormControl>
-                      <FormDescription>
-                        Suas comissões serão pagas via Pix nesta chave
-                      </FormDescription>
+                      <FormLabel>Tipo de Repasse *</FormLabel>
+                      <Select onValueChange={field.onChange} defaultValue={field.value || "pix"}>
+                        <FormControl>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Selecione o tipo de repasse" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          <SelectItem value="pix">PIX</SelectItem>
+                          <SelectItem value="bank">Dados Bancários</SelectItem>
+                        </SelectContent>
+                      </Select>
                       <FormMessage />
                     </FormItem>
                   )}
                 />
+
+                {/* Campos PIX */}
+                {form.watch("paymentType") === "pix" && (
+                  <div className="grid gap-4 md:grid-cols-2">
+                    <FormField
+                      control={form.control}
+                      name="pixKey"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Chave PIX *</FormLabel>
+                          <FormControl>
+                            <Input
+                              placeholder="CPF, CNPJ, e-mail, telefone ou chave aleatória"
+                              {...field}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+
+                    <FormField
+                      control={form.control}
+                      name="pixFullName"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Nome Completo do PIX *</FormLabel>
+                          <FormControl>
+                            <Input
+                              placeholder="Nome completo como cadastrado no PIX"
+                              {...field}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+
+                    <FormField
+                      control={form.control}
+                      name="pixBank"
+                      render={({ field }) => (
+                        <FormItem className="md:col-span-2">
+                          <FormLabel>Banco do PIX *</FormLabel>
+                          <FormControl>
+                            <Input
+                              placeholder="Nome do banco onde está cadastrado o PIX"
+                              {...field}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+                )}
+
+                {/* Campos Bancários */}
+                {form.watch("paymentType") === "bank" && (
+                  <div className="grid gap-4 md:grid-cols-2">
+                    <FormField
+                      control={form.control}
+                      name="bankCode"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Código do Banco *</FormLabel>
+                          <FormControl>
+                            <Input
+                              placeholder="Exemplo: 001, 033, 104"
+                              {...field}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+
+                    <FormField
+                      control={form.control}
+                      name="bankName"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Nome do Banco *</FormLabel>
+                          <FormControl>
+                            <Input
+                              placeholder="Exemplo: Banco do Brasil, Itaú"
+                              {...field}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+
+                    <FormField
+                      control={form.control}
+                      name="agency"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Agência *</FormLabel>
+                          <FormControl>
+                            <Input
+                              placeholder="Número da agência"
+                              {...field}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+
+                    <FormField
+                      control={form.control}
+                      name="account"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Conta *</FormLabel>
+                          <FormControl>
+                            <Input
+                              placeholder="Número da conta"
+                              {...field}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+                )}
               </CardContent>
             </Card>
 
