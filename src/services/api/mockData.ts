@@ -148,7 +148,12 @@ export const MOCK_AFFILIATES: Affiliate[] = [
     commissionRate: 5.5,
     commissionType: "percentage",
     notes: "Afiliada com ótimo desempenho em redes sociais",
-    pixKey: "maria.silva@email.com",
+    paymentType: "pix",
+    pixData: {
+      pixKey: "maria.silva@email.com",
+      fullName: "Maria Silva",
+      bank: "Banco do Brasil"
+    },
     socialNetworks: {
       facebook: "https://facebook.com/maria.silva",
       instagram: "https://instagram.com/maria.silva",
@@ -175,7 +180,12 @@ export const MOCK_AFFILIATES: Affiliate[] = [
     commissionRate: 150.00,
     commissionType: "fixed",
     notes: "Especialista em marketing digital",
-    pixKey: "987.654.321-00",
+    paymentType: "pix",
+    pixData: {
+      pixKey: "987.654.321-00",
+      fullName: "João Santos",
+      bank: "Itaú"
+    },
     socialNetworks: {
       instagram: "https://instagram.com/joao.santos",
       tiktok: "https://tiktok.com/@joao.santos"
@@ -201,7 +211,13 @@ export const MOCK_AFFILIATES: Affiliate[] = [
     commissionRate: 7.0,
     commissionType: "percentage",
     notes: "Foco em público jovem universitário",
-    pixKey: "+5531777773333",
+    paymentType: "bank",
+    bankData: {
+      bankCode: "237",
+      bankName: "Bradesco",
+      agency: "3456-7",
+      account: "23456-8"
+    },
     socialNetworks: {
       facebook: "https://facebook.com/ana.costa",
       tiktok: "https://tiktok.com/@ana.costa",

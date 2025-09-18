@@ -73,7 +73,18 @@ export interface Affiliate {
   commissionRate: number;
   commissionType: "percentage" | "fixed";
   notes?: string;
-  pixKey: string;
+  paymentType: "pix" | "bank";
+  pixData?: {
+    pixKey: string;
+    fullName: string;
+    bank: string;
+  };
+  bankData?: {
+    bankCode: string;
+    bankName: string;
+    agency: string;
+    account: string;
+  };
   socialNetworks: {
     facebook?: string;
     tiktok?: string;
