@@ -32,6 +32,7 @@ export interface Coupon {
   validFrom?: string;
   validUntil: string;
   isActive: boolean;
+  uniquePerCpf?: boolean;
   affiliateId?: string;
   createdAt: string;
   updatedAt: string;

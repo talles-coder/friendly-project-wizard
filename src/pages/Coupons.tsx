@@ -667,6 +667,15 @@ const Coupons = () => {
                   <Label htmlFor="isActive">Ativo</Label>
                 </div>
 
+                <div className="flex items-center space-x-2">
+                  <Switch
+                    id="uniquePerCpf"
+                    checked={editForm.uniquePerCpf ?? false}
+                    onCheckedChange={(checked) => setEditForm({ ...editForm, uniquePerCpf: checked })}
+                  />
+                  <Label htmlFor="uniquePerCpf">Uso único por CPF</Label>
+                </div>
+
                 {/* Regras de Disponibilização */}
                 <div className="space-y-4 pt-4 border-t">
                   <h3 className="text-lg font-semibold text-gray-900">Regras de Disponibilização</h3>
