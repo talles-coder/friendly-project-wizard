@@ -109,6 +109,8 @@ export interface Affiliate {
     instagram?: string;
     youtube?: string;
   };
+  experience?: string;
+  motivation?: string;
   createdAt?: string;
   updatedAt?: string;
 }
