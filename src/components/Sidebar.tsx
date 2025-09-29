@@ -13,21 +13,6 @@ const Sidebar = () => {
         <ul className="space-y-1">
           <li>
             <NavLink
-              to="/"
-              className={({ isActive }) =>
-                `flex items-center gap-3 px-4 py-3 text-sm rounded-md transition-colors ${
-                  isActive
-                    ? "bg-blue-50 text-blue-700 font-medium"
-                    : "text-gray-600 hover:bg-gray-100"
-                }`
-              }
-            >
-              <LayoutDashboard className="h-5 w-5" />
-              <span>Dashboard</span>
-            </NavLink>
-          </li>
-          <li>
-            <NavLink
               to="/cupons"
               className={({ isActive }) =>
                 `flex items-center gap-3 px-4 py-3 text-sm rounded-md transition-colors ${

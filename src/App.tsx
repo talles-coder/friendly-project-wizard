@@ -12,8 +12,6 @@ import Users from "./pages/Users";
 import Affiliates from "./pages/Affiliates";
 import PublicAffiliateRegistration from "./pages/PublicAffiliateRegistration";
 import NotFound from "./pages/NotFound";
-import Dashboard from "./pages/Dashboard";
-
 function App() {
   const queryClient = new QueryClient();
 
@@ -29,7 +27,7 @@ function App() {
               <Route path="/cadastro-afiliado" element={<PublicAffiliateRegistration />} />
               
               <Route element={<Layout />}>
-                <Route path="/" element={<Dashboard />} />
+                <Route path="/" element={<Navigate to="/cupons" replace />} />
                 <Route path="/cupons" element={<Coupons />} />
                 <Route path="/afiliados" element={<Affiliates />} />
                 <Route path="/usuarios" element={<Users />} />
