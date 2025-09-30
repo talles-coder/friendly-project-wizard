@@ -13,11 +13,19 @@ import { Plus, Facebook, Instagram, Youtube, Edit, Trash2 } from "lucide-react";
 import { Affiliate } from "@/types";
 import { AffiliateForm } from "@/components/AffiliateForm";
 import { toast } from "@/hooks/use-toast";
+import { useAffiliates, useCreateAffiliate, useUpdateAffiliate, useDeleteAffiliate } from "@/hooks/useAffiliates";
 
 const Affiliates = () => {
-  const [affiliates, setAffiliates] = useState<Affiliate[]>([]);
   const [showForm, setShowForm] = useState(false);
   const [editingAffiliate, setEditingAffiliate] = useState<Affiliate | null>(null);
+
+  // Carregar dados da API
+  const { data: affiliatesData, loading: loadingAffiliates, refetch: refetchAffiliates } = useAffiliates();
+  const createAffiliateMutation = useCreateAffiliate();
+  const updateAffiliateMutation = useUpdateAffiliate();
+  const deleteAffiliateMutation = useDeleteAffiliate();
+
+  const affiliates = affiliatesData || [];
 
   const getSocialIcon = (network: string, url?: string) => {
     if (!url) return null;
@@ -38,21 +46,27 @@ const Affiliates = () => {
     }
   };
 
-  const handleSaveAffiliate = (affiliateData: Partial<Affiliate>) => {
+  const handleSaveAffiliate = async (affiliateData: Partial<Affiliate>) => {
     if (editingAffiliate) {
       // Update existing affiliate
-      setAffiliates(affiliates.map(a => 
-        a.id === editingAffiliate.id 
-          ? { ...a, ...affiliateData } as Affiliate
-          : a
-      ));
+      const result = await updateAffiliateMutation.mutate({ 
+        id: editingAffiliate.id, 
+        data: affiliateData 
+      });
+      if (result !== null) {
+        refetchAffiliates();
+        setShowForm(false);
+        setEditingAffiliate(null);
+      }
     } else {
       // Add new affiliate
-      setAffiliates([...affiliates, affiliateData as Affiliate]);
+      const result = await createAffiliateMutation.mutate(affiliateData as Omit<Affiliate, 'id' | 'internalCode'>);
+      if (result !== null) {
+        refetchAffiliates();
+        setShowForm(false);
+        setEditingAffiliate(null);
+      }
     }
-    
-    setShowForm(false);
-    setEditingAffiliate(null);
   };
 
   const handleEditAffiliate = (affiliate: Affiliate) => {
@@ -60,8 +74,11 @@ const Affiliates = () => {
     setShowForm(true);
   };
 
-  const handleDeleteAffiliate = (id: string) => {
-    setAffiliates(affiliates.filter(a => a.id !== id));
+  const handleDeleteAffiliate = async (id: string) => {
+    const result = await deleteAffiliateMutation.mutate(id);
+    if (result !== null) {
+      refetchAffiliates();
+    }
   };
 
   const handleNewAffiliate = () => {
@@ -81,6 +98,14 @@ const Affiliates = () => {
         onSave={handleSaveAffiliate}
         onCancel={handleCancelForm}
       />
+    );
+  }
+
+  if (loadingAffiliates) {
+    return (
+      <div className="flex items-center justify-center h-64">
+        <p className="text-gray-500">Carregando...</p>
+      </div>
     );
   }
 

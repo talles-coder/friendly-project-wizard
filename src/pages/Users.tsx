@@ -1,5 +1,4 @@
-
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { User } from "@/types";
 import { Button } from "@/components/ui/button";
 import {
@@ -19,19 +18,22 @@ import {
   DialogFooter,
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
+import { useUsers, useCreateUser, useUpdateUser, useDeleteUser } from "@/hooks/useUsers";
 
 const Users = () => {
-  const [users, setUsers] = useState<User[]>([]);
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
   const [editForm, setEditForm] = useState<Partial<User>>({});
 
-  useEffect(() => {
-    // Carregar usuários da API
-    // TODO: Implementar carregamento de usuários via API
-  }, []);
+  // Carregar dados da API
+  const { data: usersData, loading: loadingUsers, refetch: refetchUsers } = useUsers();
+  const createUserMutation = useCreateUser();
+  const updateUserMutation = useUpdateUser();
+  const deleteUserMutation = useDeleteUser();
+
+  const users = usersData || [];
 
   const handleEdit = (user: User) => {
     setSelectedUser(user);
@@ -44,41 +46,56 @@ const Users = () => {
     setIsDeleteDialogOpen(true);
   };
 
-  const confirmDelete = () => {
+  const confirmDelete = async () => {
     if (selectedUser) {
-      const updatedUsers = users.filter((u) => u.id !== selectedUser.id);
-      setUsers(updatedUsers);
-      setIsDeleteDialogOpen(false);
+      const result = await deleteUserMutation.mutate(selectedUser.id);
+      if (result !== null) {
+        refetchUsers();
+        setIsDeleteDialogOpen(false);
+      }
     }
   };
 
-  const handleEditSubmit = (e: React.FormEvent) => {
+  const handleEditSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (selectedUser && editForm) {
-      const updatedUsers = users.map((u) =>
-        u.id === selectedUser.id ? { ...u, ...editForm } : u
-      );
-      setUsers(updatedUsers);
-      setIsEditDialogOpen(false);
+      const result = await updateUserMutation.mutate({ 
+        id: selectedUser.id, 
+        data: editForm 
+      });
+      if (result !== null) {
+        refetchUsers();
+        setIsEditDialogOpen(false);
+      }
     }
   };
 
-  const handleCreateSubmit = (e: React.FormEvent) => {
+  const handleCreateSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (editForm) {
-      const newUser: User = {
-        id: Date.now().toString(),
+      const newUserData = {
         name: editForm.name || "",
         email: editForm.email || "",
         cpf: editForm.cpf || "",
         phone: editForm.phone || "",
         role: editForm.role || "afiliado",
       };
-      setUsers([...users, newUser]);
-      setIsCreateDialogOpen(false);
-      setEditForm({});
+      const result = await createUserMutation.mutate(newUserData);
+      if (result !== null) {
+        refetchUsers();
+        setIsCreateDialogOpen(false);
+        setEditForm({});
+      }
     }
   };
+
+  if (loadingUsers) {
+    return (
+      <div className="flex items-center justify-center h-64">
+        <p className="text-gray-500">Carregando...</p>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">
