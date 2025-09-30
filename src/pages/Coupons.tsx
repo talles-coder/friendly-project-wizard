@@ -1003,7 +1003,7 @@ const Coupons = () => {
                         <Table>
                           <TableHeader>
                             <TableRow>
-                              <TableHead>ID do Afiliado</TableHead>
+                              <TableHead>Código Interno</TableHead>
                               <TableHead>Nome do Afiliado</TableHead>
                               <TableHead>Código do Cupom</TableHead>
                               <TableHead className="text-right">Ações</TableHead>
@@ -1013,7 +1013,7 @@ const Coupons = () => {
                             {paginatedChildCoupons.map((child) => (
                               <TableRow key={child.id}>
                                 <TableCell>
-                                  {child.affiliateId || '-'}
+                                  {child.affiliateId ? affiliates.find(a => a.id === child.affiliateId)?.internalCode || '-' : '-'}
                                 </TableCell>
                                 <TableCell>
                                   <Select
