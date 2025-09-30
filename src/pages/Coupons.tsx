@@ -1013,6 +1013,9 @@ const Coupons = () => {
                             {paginatedChildCoupons.map((child) => (
                               <TableRow key={child.id}>
                                 <TableCell>
+                                  {child.affiliateId || '-'}
+                                </TableCell>
+                                <TableCell>
                                   <Select
                                     value={child.affiliateId}
                                     onValueChange={(value) => handleAffiliateChange(child.id, value)}
@@ -1020,7 +1023,7 @@ const Coupons = () => {
                                     <SelectTrigger className="w-full">
                                       <SelectValue placeholder="Selecione um afiliado" />
                                     </SelectTrigger>
-                                     <SelectContent>
+                                    <SelectContent>
                                       {affiliates.map((affiliate) => (
                                         <SelectItem key={affiliate.id} value={affiliate.id}>
                                           {affiliate.name}
@@ -1029,7 +1032,6 @@ const Coupons = () => {
                                     </SelectContent>
                                   </Select>
                                 </TableCell>
-                                <TableCell>{child.affiliateName}</TableCell>
                                  <TableCell>
                                    <Input
                                      value={child.couponCode}
