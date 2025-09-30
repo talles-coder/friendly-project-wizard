@@ -73,6 +73,14 @@ const formSchema = z.object({
   bankName: z.string().optional(),
   agency: z.string().optional(),
   account: z.string().optional(),
+  // Redes sociais
+  facebook: z.string().optional(),
+  instagram: z.string().optional(),
+  tiktok: z.string().optional(),
+  youtube: z.string().optional(),
+  // Experiência e motivação
+  experience: z.string().optional(),
+  motivation: z.string().optional(),
 }).refine((data) => {
   if (data.paymentType === "pix") {
     return data.pixKey && data.pixFullName && data.pixBank;
@@ -152,6 +160,12 @@ export const AffiliateForm = ({ affiliate, onSave, onCancel }: AffiliateFormProp
       bankName: affiliate?.bankData?.bankName || "",
       agency: affiliate?.bankData?.agency || "",
       account: affiliate?.bankData?.account || "",
+      facebook: affiliate?.socialNetworks?.facebook || "",
+      instagram: affiliate?.socialNetworks?.instagram || "",
+      tiktok: affiliate?.socialNetworks?.tiktok || "",
+      youtube: affiliate?.socialNetworks?.youtube || "",
+      experience: affiliate?.experience || "",
+      motivation: affiliate?.motivation || "",
     },
   });
 
@@ -188,7 +202,14 @@ export const AffiliateForm = ({ affiliate, onSave, onCancel }: AffiliateFormProp
         agency: data.agency!,
         account: data.account!,
       } : undefined,
-      socialNetworks: affiliate?.socialNetworks || {},
+      socialNetworks: {
+        facebook: data.facebook || "",
+        instagram: data.instagram || "",
+        tiktok: data.tiktok || "",
+        youtube: data.youtube || "",
+      },
+      experience: data.experience,
+      motivation: data.motivation,
     };
 
     onSave(affiliateData);
@@ -730,6 +751,120 @@ export const AffiliateForm = ({ affiliate, onSave, onCancel }: AffiliateFormProp
                   />
                 </div>
               )}
+            </CardContent>
+          </Card>
+
+          {/* Redes Sociais */}
+          <Card>
+            <CardHeader>
+              <CardTitle>📱 Redes Sociais</CardTitle>
+              <CardDescription>
+                Onde o afiliado pretende promover os produtos (Opcional)
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="grid gap-4 md:grid-cols-2">
+              <FormField
+                control={form.control}
+                name="instagram"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Instagram</FormLabel>
+                    <FormControl>
+                      <Input placeholder="@usuario" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="facebook"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Facebook</FormLabel>
+                    <FormControl>
+                      <Input placeholder="facebook.com/usuario" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="tiktok"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>TikTok</FormLabel>
+                    <FormControl>
+                      <Input placeholder="@usuario" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="youtube"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>YouTube</FormLabel>
+                    <FormControl>
+                      <Input placeholder="youtube.com/c/canal" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </CardContent>
+          </Card>
+
+          {/* Experiência e Motivação */}
+          <Card>
+            <CardHeader>
+              <CardTitle>💡 Informações Adicionais</CardTitle>
+              <CardDescription>
+                Experiência e motivações do afiliado
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <FormField
+                control={form.control}
+                name="experience"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Experiência com Marketing Digital/Vendas</FormLabel>
+                    <FormControl>
+                      <Textarea
+                        placeholder="Experiência anterior com vendas, marketing digital, redes sociais, etc..."
+                        className="min-h-[100px]"
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="motivation"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Motivação para ser afiliado</FormLabel>
+                    <FormControl>
+                      <Textarea
+                        placeholder="O que motiva a ser parceiro? Como pretende divulgar os produtos?"
+                        className="min-h-[100px]"
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
             </CardContent>
           </Card>
 

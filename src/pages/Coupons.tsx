@@ -669,11 +669,11 @@ const Coupons = () => {
 
                 <div className="flex items-center space-x-2">
                   <Switch
-                    id="uniqueByPerson"
-                    checked={editForm.isActive ?? true}
-                    onCheckedChange={(checked) => setEditForm({ ...editForm,isActive: checked })}
+                    id="uniquePerCpf"
+                    checked={editForm.uniquePerCpf ?? false}
+                    onCheckedChange={(checked) => setEditForm({ ...editForm, uniquePerCpf: checked })}
                   />
-                  <Label htmlFor="uniqueByPerson">Uso Unico por Pessoa</Label>
+                  <Label htmlFor="uniquePerCpf">Uso único por CPF</Label>
                 </div>
 
                 {/* Regras de Disponibilização */}
@@ -1003,7 +1003,7 @@ const Coupons = () => {
                         <Table>
                           <TableHeader>
                             <TableRow>
-                              <TableHead>ID do Afiliado</TableHead>
+                              <TableHead>Código Interno</TableHead>
                               <TableHead>Nome do Afiliado</TableHead>
                               <TableHead>Código do Cupom</TableHead>
                               <TableHead className="text-right">Ações</TableHead>
@@ -1013,6 +1013,9 @@ const Coupons = () => {
                             {paginatedChildCoupons.map((child) => (
                               <TableRow key={child.id}>
                                 <TableCell>
+                                  {child.affiliateId ? affiliates.find(a => a.id === child.affiliateId)?.internalCode || '-' : '-'}
+                                </TableCell>
+                                <TableCell>
                                   <Select
                                     value={child.affiliateId}
                                     onValueChange={(value) => handleAffiliateChange(child.id, value)}
@@ -1020,16 +1023,19 @@ const Coupons = () => {
                                     <SelectTrigger className="w-full">
                                       <SelectValue placeholder="Selecione um afiliado" />
                                     </SelectTrigger>
-                                    <SelectContent>
-                                      {affiliates.map((affiliate) => (
-                                        <SelectItem key={affiliate.id} value={affiliate.id}>
-                                          {affiliate.internalCode}
-                                        </SelectItem>
-                                      ))}
-                                    </SelectContent>
+                                     <SelectContent>
+                                       {affiliates
+                                         .filter(affiliate => 
+                                           !childCoupons.some(c => c.affiliateId === affiliate.id && c.id !== child.id)
+                                         )
+                                         .map((affiliate) => (
+                                           <SelectItem key={affiliate.id} value={affiliate.id}>
+                                             {affiliate.name}
+                                           </SelectItem>
+                                         ))}
+                                     </SelectContent>
                                   </Select>
                                 </TableCell>
-                                <TableCell>{child.affiliateName}</TableCell>
                                  <TableCell>
                                    <Input
                                      value={child.couponCode}
