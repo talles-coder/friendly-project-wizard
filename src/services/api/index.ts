@@ -2,9 +2,7 @@
 import { API_CONFIG } from './config';
 
 // Importar serviços baseado na configuração
-const servicesModule = API_CONFIG.USE_MOCK 
-  ? import('./mockServices') 
-  : import('./supabaseServices');
+const servicesModule = import('./mockServices');
 
 // Reexportar serviços dinamicamente
 export const usersService = (await servicesModule).usersService;
