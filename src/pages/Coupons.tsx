@@ -10,7 +10,6 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Pencil, Trash2, Plus, X, Link } from "lucide-react";
-import { MOCK_AFFILIATES } from "@/services/api/mockData";
 import { 
   Dialog, 
   DialogContent, 
@@ -42,98 +41,6 @@ import {
 } from "@/components/ui/pagination";
 import { useToast } from "@/hooks/use-toast";
 
-// Gera dados de exemplo atualizados
-const generateMockCoupons = (): Coupon[] => {
-  const now = new Date().toISOString();
-  return [
-    {
-      id: "1",
-      code: "BLACKFRIDAY2023",
-      name: "BLACKFRIDAY",
-      description: "Desconto para Black Friday",
-      discountType: "percentage",
-      discountValue: 20,
-      subscriptionDiscount: 0,
-      availableQuantity: 100,
-      usedCount: 23,
-      startDate: "2023-11-20",
-      validUntil: "2023-11-30",
-      isActive: true,
-      createdAt: now,
-      updatedAt: now,
-      createdBy: "Admin",
-    },
-    {
-      id: "2",
-      code: "WELCOME10",
-      name: "WELCOME10",
-      description: "Desconto de boas-vindas",
-      discountType: "fixed",
-      discountValue: 10,
-      subscriptionDiscount: 0,
-      availableQuantity: 500,
-      usedCount: 152,
-      startDate: "2023-12-01",
-      validUntil: "2023-12-31",
-      isActive: true,
-      createdAt: now,
-      updatedAt: now,
-      createdBy: "System",
-    },
-    {
-      id: "3",
-      code: "SUMMER2023",
-      name: "SUMMER2023",
-      description: "Desconto de verão",
-      discountType: "percentage",
-      discountValue: 15,
-      subscriptionDiscount: 0,
-      availableQuantity: 200,
-      usedCount: 87,
-      startDate: "2023-07-01",
-      validUntil: "2023-08-31",
-      isActive: false,
-      createdAt: now,
-      updatedAt: now,
-      createdBy: "Marketing",
-    },
-    {
-      id: "4",
-      code: "AFILIADO20",
-      name: "AFILIADO20",
-      description: "Desconto exclusivo para afiliados",
-      discountType: "percentage",
-      discountValue: 20,
-      subscriptionDiscount: 0,
-      availableQuantity: 50,
-      usedCount: 12,
-      startDate: "2023-09-01",
-      validUntil: "2023-09-15",
-      isActive: true,
-      createdAt: now,
-      updatedAt: now,
-      createdBy: "AffiliateManager",
-    },
-    {
-      id: "5",
-      code: "PRIMEIRACOMPRA",
-      name: "PRIMEIRACOMPRA",
-      description: "Desconto para a primeira compra",
-      discountType: "fixed",
-      discountValue: 5,
-      subscriptionDiscount: 0,
-      availableQuantity: 1000,
-      usedCount: 345,
-      startDate: "2023-01-01",
-      validUntil: "2023-12-31",
-      isActive: true,
-      createdAt: now,
-      updatedAt: now,
-      createdBy: "System",
-    },
-  ];
-};
-
 const Coupons = () => {
   const [coupons, setCoupons] = useState<Coupon[]>([]);
   const [selectedCoupon, setSelectedCoupon] = useState<Coupon | null>(null);
@@ -142,7 +49,7 @@ const Coupons = () => {
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
   const [editForm, setEditForm] = useState<Partial<Coupon>>({});
   const [childCoupons, setChildCoupons] = useState<ChildCoupon[]>([]);
-  const [affiliates] = useState<Affiliate[]>(MOCK_AFFILIATES);
+  const [affiliates, setAffiliates] = useState<Affiliate[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [activeTab, setActiveTab] = useState("general");
   const [codeError, setCodeError] = useState("");
@@ -160,22 +67,10 @@ const Coupons = () => {
   const totalPages = Math.ceil(childCoupons.length / itemsPerPage);
 
   useEffect(() => {
-    // Em uma aplicação real, isso seria uma chamada à API
-    const storedCoupons = localStorage.getItem("coupons");
-    if (storedCoupons) {
-      setCoupons(JSON.parse(storedCoupons));
-    } else {
-      const mockCoupons = generateMockCoupons();
-      setCoupons(mockCoupons);
-      localStorage.setItem("coupons", JSON.stringify(mockCoupons));
-    }
+    // Carregar cupons da API
+    // TODO: Implementar carregamento de cupons via API
+    // TODO: Implementar carregamento de afiliados via API
   }, []);
-
-  // Salva os cupons quando há alterações
-  const saveCoupons = (updatedCoupons: Coupon[]) => {
-    setCoupons(updatedCoupons);
-    localStorage.setItem("coupons", JSON.stringify(updatedCoupons));
-  };
 
   // Valida se um código de cupom é único
   const validateCouponCode = (code: string, excludeId?: string) => {
@@ -260,7 +155,7 @@ const Coupons = () => {
   const confirmDelete = () => {
     if (selectedCoupon) {
       const updatedCoupons = coupons.filter((c) => c.id !== selectedCoupon.id);
-      saveCoupons(updatedCoupons);
+      setCoupons(updatedCoupons);
       setIsDeleteDialogOpen(false);
     }
   };
@@ -307,7 +202,7 @@ const Coupons = () => {
           updatedAt: new Date().toISOString() 
         } : c
       );
-      saveCoupons(updatedCoupons);
+      setCoupons(updatedCoupons);
       setIsEditDialogOpen(false);
       setChildCoupons([]);
       setCodeError("");
@@ -368,7 +263,7 @@ const Coupons = () => {
         createdBy: user?.name || "Unknown",
         childCoupons,
       };
-      saveCoupons([...coupons, newCoupon]);
+      setCoupons([...coupons, newCoupon]);
       setIsCreateDialogOpen(false);
       setEditForm({});
       setChildCoupons([]);

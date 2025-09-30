@@ -14,99 +14,8 @@ import { Affiliate } from "@/types";
 import { AffiliateForm } from "@/components/AffiliateForm";
 import { toast } from "@/hooks/use-toast";
 
-// Mock data for affiliates
-const MOCK_AFFILIATES: Affiliate[] = [
-  {
-    id: "1",
-    name: "Maria Silva",
-    birthDate: "1985-03-15",
-    cpf: "123.456.789-00",
-    email: "maria@example.com",
-    phone: "(11) 99999-1111",
-    internalCode: "AFF001234",
-    partnershipStartDate: "2024-01-15",
-    commissionRate: 5.5,
-    commissionType: "percentage",
-    subscriptionCommissionRate: 3.0,
-    subscriptionCommissionType: "percentage",
-    paymentType: "pix",
-    pixData: {
-      pixKey: "maria.silva@email.com",
-      fullName: "Maria Silva",
-      bank: "Banco do Brasil"
-    },
-    socialNetworks: {
-      facebook: "https://facebook.com/maria.silva",
-      instagram: "https://instagram.com/maria.silva",
-      youtube: "https://youtube.com/mariasilva"
-    }
-  },
-  {
-    id: "2",
-    name: "João Santos",
-    birthDate: "1990-07-22",
-    cpf: "987.654.321-00",
-    email: "joao@example.com",
-    phone: "(21) 88888-2222",
-    internalCode: "AFF001235",
-    partnershipStartDate: "2024-02-01",
-    commissionRate: 150.00,
-    commissionType: "fixed",
-    subscriptionCommissionRate: 50.00,
-    subscriptionCommissionType: "fixed",
-    paymentType: "pix",
-    pixData: {
-      pixKey: "987.654.321-00",
-      fullName: "João Santos",
-      bank: "Itaú"
-    },
-    socialNetworks: {
-      instagram: "https://instagram.com/joao.santos",
-      tiktok: "https://tiktok.com/@joao.santos"
-    }
-  },
-  {
-    id: "3",
-    name: "Ana Costa",
-    birthDate: "1988-12-05",
-    cpf: "456.789.123-00",
-    email: "ana@example.com",
-    phone: "(31) 77777-3333",
-    internalCode: "AFF001236",
-    partnershipStartDate: "2024-01-10",
-    commissionRate: 7.0,
-    commissionType: "percentage",
-    subscriptionCommissionRate: 4.5,
-    subscriptionCommissionType: "percentage",
-    paymentType: "bank",
-    bankData: {
-      bankCode: "001",
-      bankName: "Banco do Brasil",
-      agency: "1234-5",
-      account: "12345-6"
-    },
-    socialNetworks: {
-      facebook: "https://facebook.com/ana.costa",
-      tiktok: "https://tiktok.com/@ana.costa",
-      youtube: "https://youtube.com/anacosta"
-    }
-  }
-];
-
-// TikTok icon component (since it's not in lucide-react)
-const TikTokIcon = ({ className }: { className?: string }) => (
-  <svg
-    className={className}
-    viewBox="0 0 24 24"
-    fill="currentColor"
-    xmlns="http://www.w3.org/2000/svg"
-  >
-    <path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1 2.31-4.64 2.93 2.93 0 0 1 .88.13V9.4a6.84 6.84 0 0 0-1-.05A6.33 6.33 0 0 0 5 20.1a6.34 6.34 0 0 0 10.86-4.43v-7a8.16 8.16 0 0 0 4.77 1.52v-3.4a4.85 4.85 0 0 1-1-.1z"/>
-  </svg>
-);
-
 const Affiliates = () => {
-  const [affiliates, setAffiliates] = useState<Affiliate[]>(MOCK_AFFILIATES);
+  const [affiliates, setAffiliates] = useState<Affiliate[]>([]);
   const [showForm, setShowForm] = useState(false);
   const [editingAffiliate, setEditingAffiliate] = useState<Affiliate | null>(null);
 
@@ -123,7 +32,7 @@ const Affiliates = () => {
       case 'youtube':
         return <Youtube {...iconProps} />;
       case 'tiktok':
-        return <TikTokIcon {...iconProps} />;
+        return <svg {...iconProps} viewBox="0 0 24 24" fill="currentColor"><path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1 2.31-4.64 2.93 2.93 0 0 1 .88.13V9.4a6.84 6.84 0 0 0-1-.05A6.33 6.33 0 0 0 5 20.1a6.34 6.34 0 0 0 10.86-4.43v-7a8.16 8.16 0 0 0 4.77 1.52v-3.4a4.85 4.85 0 0 1-1-.1z"/></svg>;
       default:
         return null;
     }

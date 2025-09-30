@@ -1,8 +1,5 @@
 // Configuração da API
 export const API_CONFIG = {
-  // Mudar para true quando quiser usar o backend real
-  USE_MOCK: false,
-  
   // URL base do seu backend
   BASE_URL: 'http://localhost:3001',
     
@@ -36,9 +33,6 @@ export interface ApiError {
   details?: any;
 }
 
-// Utilitário para simular delay de rede no mock
-export const simulateNetworkDelay = (ms: number = 500) => 
-  new Promise(resolve => setTimeout(resolve, ms));
 
 // Cliente HTTP básico
 export class ApiClient {

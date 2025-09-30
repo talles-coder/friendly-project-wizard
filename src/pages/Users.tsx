@@ -20,44 +20,6 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 
-// Gera dados de exemplo
-const generateMockUsers = (): User[] => {
-  return [
-    {
-      id: "1",
-      name: "Administrador",
-      email: "admin@example.com",
-      cpf: "123.456.789-00",
-      phone: "(11) 98765-4321",
-      role: "admin",
-    },
-    {
-      id: "2",
-      name: "Afiliado Teste",
-      email: "afiliado@example.com",
-      cpf: "987.654.321-00",
-      phone: "(11) 91234-5678",
-      role: "afiliado",
-    },
-    {
-      id: "3",
-      name: "João Silva",
-      email: "joao@example.com",
-      cpf: "111.222.333-44",
-      phone: "(21) 98765-4321",
-      role: "afiliado",
-    },
-    {
-      id: "4",
-      name: "Maria Oliveira",
-      email: "maria@example.com",
-      cpf: "555.666.777-88",
-      phone: "(31) 98765-4321",
-      role: "afiliado",
-    },
-  ];
-};
-
 const Users = () => {
   const [users, setUsers] = useState<User[]>([]);
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
@@ -67,22 +29,9 @@ const Users = () => {
   const [editForm, setEditForm] = useState<Partial<User>>({});
 
   useEffect(() => {
-    // Em uma aplicação real, isso seria uma chamada à API
-    const storedUsers = localStorage.getItem("users");
-    if (storedUsers) {
-      setUsers(JSON.parse(storedUsers));
-    } else {
-      const mockUsers = generateMockUsers();
-      setUsers(mockUsers);
-      localStorage.setItem("users", JSON.stringify(mockUsers));
-    }
+    // Carregar usuários da API
+    // TODO: Implementar carregamento de usuários via API
   }, []);
-
-  // Salva os usuários quando há alterações
-  const saveUsers = (updatedUsers: User[]) => {
-    setUsers(updatedUsers);
-    localStorage.setItem("users", JSON.stringify(updatedUsers));
-  };
 
   const handleEdit = (user: User) => {
     setSelectedUser(user);
@@ -97,15 +46,8 @@ const Users = () => {
 
   const confirmDelete = () => {
     if (selectedUser) {
-      // Não permitir excluir o próprio usuário admin logado
-      if (selectedUser.email === "admin@example.com") {
-        alert("Não é possível excluir o usuário administrador principal");
-        setIsDeleteDialogOpen(false);
-        return;
-      }
-      
       const updatedUsers = users.filter((u) => u.id !== selectedUser.id);
-      saveUsers(updatedUsers);
+      setUsers(updatedUsers);
       setIsDeleteDialogOpen(false);
     }
   };
@@ -116,7 +58,7 @@ const Users = () => {
       const updatedUsers = users.map((u) =>
         u.id === selectedUser.id ? { ...u, ...editForm } : u
       );
-      saveUsers(updatedUsers);
+      setUsers(updatedUsers);
       setIsEditDialogOpen(false);
     }
   };
@@ -132,7 +74,7 @@ const Users = () => {
         phone: editForm.phone || "",
         role: editForm.role || "afiliado",
       };
-      saveUsers([...users, newUser]);
+      setUsers([...users, newUser]);
       setIsCreateDialogOpen(false);
       setEditForm({});
     }
