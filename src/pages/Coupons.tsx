@@ -1023,13 +1023,17 @@ const Coupons = () => {
                                     <SelectTrigger className="w-full">
                                       <SelectValue placeholder="Selecione um afiliado" />
                                     </SelectTrigger>
-                                    <SelectContent>
-                                      {affiliates.map((affiliate) => (
-                                        <SelectItem key={affiliate.id} value={affiliate.id}>
-                                          {affiliate.name}
-                                        </SelectItem>
-                                      ))}
-                                    </SelectContent>
+                                     <SelectContent>
+                                       {affiliates
+                                         .filter(affiliate => 
+                                           !childCoupons.some(c => c.affiliateId === affiliate.id && c.id !== child.id)
+                                         )
+                                         .map((affiliate) => (
+                                           <SelectItem key={affiliate.id} value={affiliate.id}>
+                                             {affiliate.name}
+                                           </SelectItem>
+                                         ))}
+                                     </SelectContent>
                                   </Select>
                                 </TableCell>
                                  <TableCell>
