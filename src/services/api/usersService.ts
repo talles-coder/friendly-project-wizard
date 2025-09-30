@@ -1,6 +1,7 @@
 import { User } from "@/types";
-import { API_CONFIG, ApiResponse, apiClient, simulateNetworkDelay } from "./config";
+import { API_CONFIG, ApiResponse, simulateNetworkDelay } from "./config";
 import { MOCK_USERS } from "./mockData";
+import axiosClient from "./axiosClient";
 
 class UsersService {
   private mockUsers: User[] = [...MOCK_USERS];
@@ -16,7 +17,8 @@ class UsersService {
       };
     }
 
-    return apiClient.get<User[]>('/users');
+    const response = await axiosClient.get<ApiResponse<User[]>>('/users');
+    return response.data;
   }
 
   // GET /users/:id - Buscar usuário por ID
@@ -36,7 +38,8 @@ class UsersService {
       };
     }
 
-    return apiClient.get<User>(`/users/${id}`);
+    const response = await axiosClient.get<ApiResponse<User>>(`/users/${id}`);
+    return response.data;
   }
 
   // POST /users - Criar novo usuário
@@ -64,7 +67,8 @@ class UsersService {
       };
     }
 
-    return apiClient.post<User>('/users', userData);
+    const response = await axiosClient.post<ApiResponse<User>>('/users', userData);
+    return response.data;
   }
 
   // PUT /users/:id - Atualizar usuário
@@ -95,7 +99,8 @@ class UsersService {
       };
     }
 
-    return apiClient.put<User>(`/users/${id}`, userData);
+    const response = await axiosClient.patch<ApiResponse<User>>(`/users/${id}`, userData);
+    return response.data;
   }
 
   // DELETE /users/:id - Deletar usuário
@@ -122,7 +127,8 @@ class UsersService {
       };
     }
 
-    return apiClient.delete<void>(`/users/${id}`);
+    const response = await axiosClient.delete<ApiResponse<void>>(`/users/${id}`);
+    return response.data;
   }
 
   // GET /users/search?q=term - Pesquisar usuários
@@ -143,7 +149,8 @@ class UsersService {
       };
     }
 
-    return apiClient.get<User[]>(`/users/search?q=${encodeURIComponent(searchTerm)}`);
+    const response = await axiosClient.get<ApiResponse<User[]>>(`/users/search?q=${encodeURIComponent(searchTerm)}`);
+    return response.data;
   }
 }
 

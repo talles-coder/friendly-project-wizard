@@ -1,6 +1,7 @@
 import { DashboardData } from "@/types";
-import { API_CONFIG, ApiResponse, apiClient, simulateNetworkDelay } from "./config";
+import { API_CONFIG, ApiResponse, simulateNetworkDelay } from "./config";
 import { MOCK_DASHBOARD } from "./mockData";
+import axiosClient from "./axiosClient";
 
 class DashboardService {
   // GET /dashboard - Dados do dashboard
@@ -23,7 +24,8 @@ class DashboardService {
       };
     }
 
-    return apiClient.get<DashboardData>('/dashboard');
+    const response = await axiosClient.get<ApiResponse<DashboardData>>('/dashboard');
+    return response.data;
   }
 
   // GET /dashboard/revenue?period=month - Receita por período
@@ -69,12 +71,13 @@ class DashboardService {
       };
     }
 
-    return apiClient.get<{
+    const response = await axiosClient.get<ApiResponse<{
       current: number;
       previous: number;
       growth: number;
       data: Array<{ date: string; value: number }>;
-    }>(`/dashboard/revenue?period=${period}`);
+    }>>(`/dashboard/revenue?period=${period}`);
+    return response.data;
   }
 
   // GET /dashboard/activity - Atividade recente
@@ -125,13 +128,14 @@ class DashboardService {
       };
     }
 
-    return apiClient.get<Array<{
+    const response = await axiosClient.get<ApiResponse<Array<{
       id: string;
       type: 'coupon_used' | 'affiliate_joined' | 'user_registered';
       description: string;
       timestamp: string;
       user?: string;
-    }>>('/dashboard/activity');
+    }>>>('/dashboard/activity');
+    return response.data;
   }
 }
 

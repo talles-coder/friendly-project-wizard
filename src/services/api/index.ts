@@ -17,3 +17,9 @@ export type { ApiResponse, PaginatedResponse, ApiError } from './config';
 
 // Re-exportar dados mock para uso direto quando necessário
 export { MOCK_USERS, MOCK_COUPONS, MOCK_AFFILIATES, MOCK_DASHBOARD, MOCK_OPTIONS } from './mockData';
+
+// Exportar novos serviços
+export { childCouponsService } from './childCouponsService';
+export { availabilityRulesService } from './availabilityRulesService';
+export type { ChildCoupon } from './childCouponsService';
+export type { AvailabilityRule } from './availabilityRulesService';

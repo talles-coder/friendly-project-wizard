@@ -1,6 +1,7 @@
 import { Coupon } from "@/types";
-import { API_CONFIG, ApiResponse, apiClient, simulateNetworkDelay } from "./config";
+import { API_CONFIG, ApiResponse, simulateNetworkDelay } from "./config";
 import { MOCK_COUPONS } from "./mockData";
+import axiosClient from "./axiosClient";
 
 class CouponsService {
   private mockCoupons: Coupon[] = [...MOCK_COUPONS];
@@ -16,7 +17,8 @@ class CouponsService {
       };
     }
 
-    return apiClient.get<Coupon[]>('/coupons');
+    const response = await axiosClient.get<ApiResponse<Coupon[]>>('/coupons');
+    return response.data;
   }
 
   // GET /coupons/:id - Buscar cupom por ID
@@ -36,7 +38,8 @@ class CouponsService {
       };
     }
 
-    return apiClient.get<Coupon>(`/coupons/${id}`);
+    const response = await axiosClient.get<ApiResponse<Coupon>>(`/coupons/${id}`);
+    return response.data;
   }
 
   // GET /coupons/validate/:code - Validar cupom por código
@@ -86,7 +89,8 @@ class CouponsService {
       };
     }
 
-    return apiClient.get<{ valid: boolean; coupon?: Coupon; reason?: string }>(`/coupons/validate/${code}`);
+    const response = await axiosClient.get<ApiResponse<{ valid: boolean; coupon?: Coupon; reason?: string }>>(`/coupons/validate/${code}`);
+    return response.data;
   }
 
   // POST /coupons - Criar novo cupom
@@ -118,7 +122,8 @@ class CouponsService {
       };
     }
 
-    return apiClient.post<Coupon>('/coupons', couponData);
+    const response = await axiosClient.post<ApiResponse<Coupon>>('/coupons', couponData);
+    return response.data;
   }
 
   // PUT /coupons/:id - Atualizar cupom
@@ -153,7 +158,8 @@ class CouponsService {
       };
     }
 
-    return apiClient.put<Coupon>(`/coupons/${id}`, couponData);
+    const response = await axiosClient.patch<ApiResponse<Coupon>>(`/coupons/${id}`, couponData);
+    return response.data;
   }
 
   // DELETE /coupons/:id - Deletar cupom
@@ -175,7 +181,8 @@ class CouponsService {
       };
     }
 
-    return apiClient.delete<void>(`/coupons/${id}`);
+    const response = await axiosClient.delete<ApiResponse<void>>(`/coupons/${id}`);
+    return response.data;
   }
 
   // POST /coupons/:id/use - Usar cupom (incrementar contador)
@@ -204,7 +211,8 @@ class CouponsService {
       };
     }
 
-    return apiClient.post<Coupon>(`/coupons/${id}/use`, { userId });
+    const response = await axiosClient.post<ApiResponse<Coupon>>(`/coupons/${id}/use`, { userId });
+    return response.data;
   }
 
   // GET /coupons/stats - Estatísticas dos cupons
@@ -236,12 +244,13 @@ class CouponsService {
       };
     }
 
-    return apiClient.get<{
+    const response = await axiosClient.get<ApiResponse<{
       totalCoupons: number;
       activeCoupons: number;
       totalUsage: number;
       topUsedCoupons: Coupon[];
-    }>('/coupons/stats');
+    }>>('/coupons/stats');
+    return response.data;
   }
 }
 

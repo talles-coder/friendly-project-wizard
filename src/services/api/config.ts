@@ -3,10 +3,8 @@ export const API_CONFIG = {
   // Mudar para true quando quiser usar o backend real
   USE_MOCK: false,
   
-  // URL base do seu backend (quando for implementado)
-  BASE_URL: process.env.NODE_ENV === 'production' 
-    ? 'https://sua-api-producao.com/api' 
-    : 'http://localhost:3001/api',
+  // URL base do seu backend
+  BASE_URL: 'http://localhost:3001',
     
   // Headers padrão
   DEFAULT_HEADERS: {

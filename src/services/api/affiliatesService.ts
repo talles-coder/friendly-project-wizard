@@ -1,6 +1,7 @@
 import { Affiliate } from "@/types";
-import { API_CONFIG, ApiResponse, apiClient, simulateNetworkDelay } from "./config";
+import { API_CONFIG, ApiResponse, simulateNetworkDelay } from "./config";
 import { MOCK_AFFILIATES } from "./mockData";
+import axiosClient from "./axiosClient";
 
 class AffiliatesService {
   private mockAffiliates: Affiliate[] = [...MOCK_AFFILIATES];
@@ -16,7 +17,8 @@ class AffiliatesService {
       };
     }
 
-    return apiClient.get<Affiliate[]>('/affiliates');
+    const response = await axiosClient.get<ApiResponse<Affiliate[]>>('/affiliates');
+    return response.data;
   }
 
   // GET /affiliates/:id - Buscar afiliado por ID
@@ -36,7 +38,8 @@ class AffiliatesService {
       };
     }
 
-    return apiClient.get<Affiliate>(`/affiliates/${id}`);
+    const response = await axiosClient.get<ApiResponse<Affiliate>>(`/affiliates/${id}`);
+    return response.data;
   }
 
   // GET /affiliates/code/:code - Buscar afiliado por código interno
@@ -56,7 +59,8 @@ class AffiliatesService {
       };
     }
 
-    return apiClient.get<Affiliate>(`/affiliates/code/${code}`);
+    const response = await axiosClient.get<ApiResponse<Affiliate>>(`/affiliates/code/${code}`);
+    return response.data;
   }
 
   // POST /affiliates - Criar novo afiliado
@@ -98,7 +102,8 @@ class AffiliatesService {
       };
     }
 
-    return apiClient.post<Affiliate>('/affiliates', affiliateData);
+    const response = await axiosClient.post<ApiResponse<Affiliate>>('/affiliates', affiliateData);
+    return response.data;
   }
 
   // PUT /affiliates/:id - Atualizar afiliado
@@ -133,7 +138,8 @@ class AffiliatesService {
       };
     }
 
-    return apiClient.put<Affiliate>(`/affiliates/${id}`, affiliateData);
+    const response = await axiosClient.patch<ApiResponse<Affiliate>>(`/affiliates/${id}`, affiliateData);
+    return response.data;
   }
 
   // DELETE /affiliates/:id - Deletar afiliado
@@ -155,7 +161,8 @@ class AffiliatesService {
       };
     }
 
-    return apiClient.delete<void>(`/affiliates/${id}`);
+    const response = await axiosClient.delete<ApiResponse<void>>(`/affiliates/${id}`);
+    return response.data;
   }
 
   // GET /affiliates/search?q=term - Pesquisar afiliados
@@ -177,7 +184,8 @@ class AffiliatesService {
       };
     }
 
-    return apiClient.get<Affiliate[]>(`/affiliates/search?q=${encodeURIComponent(searchTerm)}`);
+    const response = await axiosClient.get<ApiResponse<Affiliate[]>>(`/affiliates/search?q=${encodeURIComponent(searchTerm)}`);
+    return response.data;
   }
 
   // GET /affiliates/:id/stats - Estatísticas do afiliado
@@ -205,12 +213,13 @@ class AffiliatesService {
       };
     }
 
-    return apiClient.get<{
+    const response = await axiosClient.get<ApiResponse<{
       totalCommissions: number;
       totalSales: number;
       conversionRate: number;
       lastSale: string | null;
-    }>(`/affiliates/${id}/stats`);
+    }>>(`/affiliates/${id}/stats`);
+    return response.data;
   }
 }
 
