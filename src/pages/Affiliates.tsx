@@ -27,6 +27,8 @@ const MOCK_AFFILIATES: Affiliate[] = [
     partnershipStartDate: "2024-01-15",
     commissionRate: 5.5,
     commissionType: "percentage",
+    subscriptionCommissionRate: 3.0,
+    subscriptionCommissionType: "percentage",
     paymentType: "pix",
     pixData: {
       pixKey: "maria.silva@email.com",
@@ -50,6 +52,8 @@ const MOCK_AFFILIATES: Affiliate[] = [
     partnershipStartDate: "2024-02-01",
     commissionRate: 150.00,
     commissionType: "fixed",
+    subscriptionCommissionRate: 50.00,
+    subscriptionCommissionType: "fixed",
     paymentType: "pix",
     pixData: {
       pixKey: "987.654.321-00",
@@ -72,6 +76,8 @@ const MOCK_AFFILIATES: Affiliate[] = [
     partnershipStartDate: "2024-01-10",
     commissionRate: 7.0,
     commissionType: "percentage",
+    subscriptionCommissionRate: 4.5,
+    subscriptionCommissionType: "percentage",
     paymentType: "bank",
     bankData: {
       bankCode: "001",

@@ -147,6 +147,8 @@ export const MOCK_AFFILIATES: Affiliate[] = [
     partnershipStartDate: "2024-01-15",
     commissionRate: 5.5,
     commissionType: "percentage",
+    subscriptionCommissionRate: 3.0,
+    subscriptionCommissionType: "percentage",
     notes: "Afiliada com ótimo desempenho em redes sociais",
     paymentType: "pix",
     pixData: {
@@ -179,6 +181,8 @@ export const MOCK_AFFILIATES: Affiliate[] = [
     partnershipStartDate: "2024-02-01",
     commissionRate: 150.00,
     commissionType: "fixed",
+    subscriptionCommissionRate: 50.00,
+    subscriptionCommissionType: "fixed",
     notes: "Especialista em marketing digital",
     paymentType: "pix",
     pixData: {
@@ -210,6 +214,8 @@ export const MOCK_AFFILIATES: Affiliate[] = [
     partnershipStartDate: "2024-01-10",
     commissionRate: 7.0,
     commissionType: "percentage",
+    subscriptionCommissionRate: 4.5,
+    subscriptionCommissionType: "percentage",
     notes: "Foco em público jovem universitário",
     paymentType: "bank",
     bankData: {

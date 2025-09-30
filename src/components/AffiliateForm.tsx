@@ -60,6 +60,10 @@ const formSchema = z.object({
   commissionType: z.enum(["percentage", "fixed"], {
     required_error: "Tipo de comissão é obrigatório",
   }),
+  subscriptionCommissionRate: z.coerce.number().min(0, "Comissão deve ser maior que 0"),
+  subscriptionCommissionType: z.enum(["percentage", "fixed"], {
+    required_error: "Tipo de comissão é obrigatório",
+  }),
   notes: z.string().optional(),
   paymentType: z.enum(["pix", "bank"], {
     required_error: "Tipo de repasse é obrigatório",
@@ -151,6 +155,8 @@ export const AffiliateForm = ({ affiliate, onSave, onCancel }: AffiliateFormProp
       partnershipStartDate: affiliate?.partnershipStartDate ? new Date(affiliate.partnershipStartDate) : undefined,
       commissionRate: affiliate?.commissionRate || 0,
       commissionType: affiliate?.commissionType || "percentage",
+      subscriptionCommissionRate: affiliate?.subscriptionCommissionRate || 0,
+      subscriptionCommissionType: affiliate?.subscriptionCommissionType || "percentage",
       notes: affiliate?.notes || "",
       paymentType: affiliate?.paymentType || "pix",
       pixKey: affiliate?.pixData?.pixKey || "",
@@ -189,6 +195,8 @@ export const AffiliateForm = ({ affiliate, onSave, onCancel }: AffiliateFormProp
       partnershipStartDate: data.partnershipStartDate.toISOString(),
       commissionRate: data.commissionRate,
       commissionType: data.commissionType,
+      subscriptionCommissionRate: data.subscriptionCommissionRate,
+      subscriptionCommissionType: data.subscriptionCommissionType,
       notes: data.notes,
       paymentType: data.paymentType,
       pixData: data.paymentType === "pix" ? {
@@ -528,49 +536,103 @@ export const AffiliateForm = ({ affiliate, onSave, onCancel }: AffiliateFormProp
                 )}
               />
 
-              <FormField
-                control={form.control}
-                name="commissionType"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Tipo de Comissão</FormLabel>
-                    <Select onValueChange={field.onChange} defaultValue={field.value}>
-                      <FormControl>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Selecione o tipo" />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        <SelectItem value="percentage">% sobre venda</SelectItem>
-                        <SelectItem value="fixed">Valor fixo</SelectItem>
-                      </SelectContent>
-                    </Select>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+              <div className="md:col-span-2 space-y-4">
+                <h4 className="font-medium">Taxa de Adesão</h4>
+                <div className="grid gap-4 md:grid-cols-2">
+                  <FormField
+                    control={form.control}
+                    name="commissionType"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Tipo de Comissão - Taxa de Adesão</FormLabel>
+                        <Select onValueChange={field.onChange} defaultValue={field.value}>
+                          <FormControl>
+                            <SelectTrigger>
+                              <SelectValue placeholder="Selecione o tipo" />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent>
+                            <SelectItem value="percentage">% sobre venda</SelectItem>
+                            <SelectItem value="fixed">Valor fixo</SelectItem>
+                          </SelectContent>
+                        </Select>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
 
-              <FormField
-                control={form.control}
-                name="commissionRate"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>
-                      {form.watch("commissionType") === "percentage" ? "Comissão (%)" : "Valor Fixo (R$)"}
-                    </FormLabel>
-                    <FormControl>
-                      <Input
-                        type="number"
-                        step="0.01"
-                        min="0"
-                        placeholder={form.watch("commissionType") === "percentage" ? "5.5" : "100.00"}
-                        {...field}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+                  <FormField
+                    control={form.control}
+                    name="commissionRate"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>
+                          {form.watch("commissionType") === "percentage" ? "Comissão - Taxa de Adesão (%)" : "Comissão - Taxa de Adesão (R$)"}
+                        </FormLabel>
+                        <FormControl>
+                          <Input
+                            type="number"
+                            step="0.01"
+                            min="0"
+                            placeholder={form.watch("commissionType") === "percentage" ? "5.5" : "100.00"}
+                            {...field}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
+              </div>
+
+              <div className="md:col-span-2 space-y-4">
+                <h4 className="font-medium">Mensalidades</h4>
+                <div className="grid gap-4 md:grid-cols-2">
+                  <FormField
+                    control={form.control}
+                    name="subscriptionCommissionType"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Tipo de Comissão - Mensalidades</FormLabel>
+                        <Select onValueChange={field.onChange} defaultValue={field.value}>
+                          <FormControl>
+                            <SelectTrigger>
+                              <SelectValue placeholder="Selecione o tipo" />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent>
+                            <SelectItem value="percentage">% sobre venda</SelectItem>
+                            <SelectItem value="fixed">Valor fixo</SelectItem>
+                          </SelectContent>
+                        </Select>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="subscriptionCommissionRate"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>
+                          {form.watch("subscriptionCommissionType") === "percentage" ? "Comissão - Mensalidades (%)" : "Comissão - Mensalidades (R$)"}
+                        </FormLabel>
+                        <FormControl>
+                          <Input
+                            type="number"
+                            step="0.01"
+                            min="0"
+                            placeholder={form.watch("subscriptionCommissionType") === "percentage" ? "5.5" : "100.00"}
+                            {...field}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
+              </div>
 
               <FormField
                 control={form.control}

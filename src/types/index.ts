@@ -95,6 +95,8 @@ export interface Affiliate {
   partnershipStartDate: string;
   commissionRate: number;
   commissionType: "percentage" | "fixed";
+  subscriptionCommissionRate: number;
+  subscriptionCommissionType: "percentage" | "fixed";
   status?: string;
   notes?: string;
   paymentType: "pix" | "bank";

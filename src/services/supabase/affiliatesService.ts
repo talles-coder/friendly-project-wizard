@@ -23,6 +23,8 @@ function mapDbToAffiliate(dbAffiliate: any): Affiliate {
     affiliateCode: dbAffiliate.affiliate_code,
     commissionRate: dbAffiliate.commission_rate,
     commissionType: dbAffiliate.commission_type,
+    subscriptionCommissionRate: 0,
+    subscriptionCommissionType: 'percentage',
     status: dbAffiliate.status,
     partnershipStartDate: dbAffiliate.created_at,
     paymentType: dbAffiliate.repasse_type === 'pix' ? 'pix' : 'bank',
