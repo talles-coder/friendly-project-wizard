@@ -1020,10 +1020,10 @@ const Coupons = () => {
                                     <SelectTrigger className="w-full">
                                       <SelectValue placeholder="Selecione um afiliado" />
                                     </SelectTrigger>
-                                    <SelectContent>
+                                     <SelectContent>
                                       {affiliates.map((affiliate) => (
                                         <SelectItem key={affiliate.id} value={affiliate.id}>
-                                          {affiliate.internalCode}
+                                          {affiliate.name}
                                         </SelectItem>
                                       ))}
                                     </SelectContent>
