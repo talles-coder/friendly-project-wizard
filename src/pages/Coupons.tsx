@@ -40,16 +40,16 @@ import {
   PaginationPrevious,
 } from "@/components/ui/pagination";
 import { useToast } from "@/hooks/use-toast";
+import { useCoupons, useCreateCoupon, useUpdateCoupon, useDeleteCoupon } from "@/hooks/useCoupons";
+import { useAffiliates } from "@/hooks/useAffiliates";
 
 const Coupons = () => {
-  const [coupons, setCoupons] = useState<Coupon[]>([]);
   const [selectedCoupon, setSelectedCoupon] = useState<Coupon | null>(null);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
   const [editForm, setEditForm] = useState<Partial<Coupon>>({});
   const [childCoupons, setChildCoupons] = useState<ChildCoupon[]>([]);
-  const [affiliates, setAffiliates] = useState<Affiliate[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [activeTab, setActiveTab] = useState("general");
   const [codeError, setCodeError] = useState("");
@@ -60,17 +60,21 @@ const Coupons = () => {
   const { toast } = useToast();
   const isAdmin = user?.role === "admin";
 
+  // Carregar dados da API
+  const { data: couponsData, loading: loadingCoupons, refetch: refetchCoupons } = useCoupons();
+  const { data: affiliatesData, loading: loadingAffiliates } = useAffiliates();
+  const createCouponMutation = useCreateCoupon();
+  const updateCouponMutation = useUpdateCoupon();
+  const deleteCouponMutation = useDeleteCoupon();
+
+  const coupons = couponsData || [];
+  const affiliates = affiliatesData || [];
+
   // Paginação dos cupons filhos
   const startIndex = (currentPage - 1) * itemsPerPage;
   const endIndex = startIndex + itemsPerPage;
   const paginatedChildCoupons = childCoupons.slice(startIndex, endIndex);
   const totalPages = Math.ceil(childCoupons.length / itemsPerPage);
-
-  useEffect(() => {
-    // Carregar cupons da API
-    // TODO: Implementar carregamento de cupons via API
-    // TODO: Implementar carregamento de afiliados via API
-  }, []);
 
   // Valida se um código de cupom é único
   const validateCouponCode = (code: string, excludeId?: string) => {
@@ -152,15 +156,17 @@ const Coupons = () => {
     setIsDeleteDialogOpen(true);
   };
 
-  const confirmDelete = () => {
+  const confirmDelete = async () => {
     if (selectedCoupon) {
-      const updatedCoupons = coupons.filter((c) => c.id !== selectedCoupon.id);
-      setCoupons(updatedCoupons);
-      setIsDeleteDialogOpen(false);
+      const result = await deleteCouponMutation.mutate(selectedCoupon.id);
+      if (result !== null) {
+        refetchCoupons();
+        setIsDeleteDialogOpen(false);
+      }
     }
   };
 
-  const handleEditSubmit = (e: React.FormEvent) => {
+  const handleEditSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (selectedCoupon && editForm) {
       // Valida código único
@@ -194,23 +200,22 @@ const Coupons = () => {
         return;
       }
 
-      const updatedCoupons = coupons.map((c) =>
-        c.id === selectedCoupon.id ? { 
-          ...c, 
-          ...editForm, 
-          childCoupons, 
-          updatedAt: new Date().toISOString() 
-        } : c
-      );
-      setCoupons(updatedCoupons);
-      setIsEditDialogOpen(false);
-      setChildCoupons([]);
-      setCodeError("");
-      setChildCodeErrors({});
+      const updateData = {
+        ...editForm,
+        childCoupons,
+      };
+      const result = await updateCouponMutation.mutate({ id: selectedCoupon.id, data: updateData });
+      if (result !== null) {
+        refetchCoupons();
+        setIsEditDialogOpen(false);
+        setChildCoupons([]);
+        setCodeError("");
+        setChildCodeErrors({});
+      }
     }
   };
 
-  const handleCreateSubmit = (e: React.FormEvent) => {
+  const handleCreateSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (editForm) {
       // Valida código único
@@ -245,30 +250,32 @@ const Coupons = () => {
       }
 
       const now = new Date().toISOString();
-      const newCoupon: Coupon = {
-        id: Date.now().toString(),
+      const newCouponData = {
         code: editForm.code || "",
         name: editForm.name || "",
         description: editForm.description || "",
-        discountType: editForm.discountType || "percentage",
+        discountType: editForm.discountType || "percentage" as "percentage" | "fixed",
         discountValue: Number(editForm.discountValue) || 0,
         subscriptionDiscount: Number(editForm.subscriptionDiscount) || 0,
         availableQuantity: Number(editForm.availableQuantity) || 0,
-        usedCount: 0,
         startDate: editForm.startDate || now.split("T")[0],
         validUntil: editForm.validUntil || now.split("T")[0],
         isActive: editForm.isActive ?? true,
-        createdAt: now,
-        updatedAt: now,
         createdBy: user?.name || "Unknown",
         childCoupons,
+        uniquePerCpf: editForm.uniquePerCpf,
+        availabilityRules: editForm.availabilityRules,
       };
-      setCoupons([...coupons, newCoupon]);
-      setIsCreateDialogOpen(false);
-      setEditForm({});
-      setChildCoupons([]);
-      setCodeError("");
-      setChildCodeErrors({});
+      
+      const result = await createCouponMutation.mutate(newCouponData);
+      if (result !== null) {
+        refetchCoupons();
+        setIsCreateDialogOpen(false);
+        setEditForm({});
+        setChildCoupons([]);
+        setCodeError("");
+        setChildCodeErrors({});
+      }
     }
   };
 
@@ -351,6 +358,14 @@ const Coupons = () => {
       });
     }
   };
+
+  if (loadingCoupons || loadingAffiliates) {
+    return (
+      <div className="flex items-center justify-center h-64">
+        <p className="text-gray-500">Carregando...</p>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">
