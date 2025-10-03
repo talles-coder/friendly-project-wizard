@@ -6,6 +6,7 @@ export interface User {
   phone?: string;
   role: "admin" | "afiliado" | "polo";
   status?: string;
+  firstAccess?: boolean;
   createdAt?: string;
   updatedAt?: string;
 }

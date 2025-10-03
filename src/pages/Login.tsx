@@ -84,6 +84,12 @@ const Login = () => {
           >
             {isLoading ? "Entrando..." : "Entrar"}
           </Button>
+
+          <div className="text-center">
+            <a href="/forgot-password" className="text-sm text-blue-600 hover:underline">
+              Esqueci minha senha
+            </a>
+          </div>
         </form>
       </div>
     </div>

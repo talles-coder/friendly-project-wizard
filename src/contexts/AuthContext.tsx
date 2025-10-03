@@ -38,6 +38,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       axiosClient.defaults.headers.common['Authorization'] = `Bearer ${token}`;
       
       setUser(user);
+      
+      // Verificar se é primeiro acesso
+      if (user.firstAccess) {
+        window.location.href = '/change-first-password';
+      }
+      
       return true;
     } catch (error) {
       console.error('Erro no login:', error);

@@ -6,6 +6,9 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { AuthProvider } from "./contexts/AuthContext";
 import Login from "./pages/Login";
+import ForgotPassword from "./pages/ForgotPassword";
+import ResetPassword from "./pages/ResetPassword";
+import ChangeFirstPassword from "./pages/ChangeFirstPassword";
 import Layout from "./components/Layout";
 import Coupons from "./pages/Coupons";
 import Users from "./pages/Users";
@@ -24,6 +27,9 @@ function App() {
           <BrowserRouter>
             <Routes>
               <Route path="/login" element={<Login />} />
+              <Route path="/forgot-password" element={<ForgotPassword />} />
+              <Route path="/reset-password" element={<ResetPassword />} />
+              <Route path="/change-first-password" element={<ChangeFirstPassword />} />
               <Route path="/cadastro-afiliado" element={<PublicAffiliateRegistration />} />
               
               <Route element={<Layout />}>
