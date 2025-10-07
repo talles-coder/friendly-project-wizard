@@ -56,6 +56,10 @@ const formSchema = z.object({
     required_error: "Tipo de comissão é obrigatório",
   }),
   expectedCommissionRate: z.coerce.number().min(0, "Comissão esperada deve ser maior que 0"),
+  subscriptionCommissionType: z.enum(["percentage", "fixed"], {
+    required_error: "Tipo de comissão é obrigatório",
+  }),
+  expectedSubscriptionCommissionRate: z.coerce.number().min(0, "Comissão esperada deve ser maior que 0"),
   notes: z.string().optional(),
   paymentType: z.enum(["pix", "bank"], {
     required_error: "Tipo de repasse é obrigatório",
@@ -123,6 +127,7 @@ export default function PublicAffiliateRegistration() {
     resolver: zodResolver(formSchema),
     defaultValues: {
       commissionType: "percentage",
+      subscriptionCommissionType: "percentage",
     },
   });
 
@@ -430,56 +435,111 @@ export default function PublicAffiliateRegistration() {
               <CardHeader>
                 <CardTitle>💰 Expectativa de Comissão</CardTitle>
                 <CardDescription>
-                  Qual tipo de comissão você prefere?
+                  Informe sua expectativa de comissão para Taxa de Adesão e Mensalidades
                 </CardDescription>
               </CardHeader>
-              <CardContent className="grid gap-4 md:grid-cols-2">
-                <FormField
-                  control={form.control}
-                  name="commissionType"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Tipo de Comissão Preferida *</FormLabel>
-                      <Select onValueChange={field.onChange} defaultValue={field.value}>
-                        <FormControl>
-                          <SelectTrigger>
-                            <SelectValue placeholder="Selecione o tipo" />
-                          </SelectTrigger>
-                        </FormControl>
-                        <SelectContent>
-                          <SelectItem value="percentage">% sobre cada venda</SelectItem>
-                          <SelectItem value="fixed">Valor fixo por venda</SelectItem>
-                        </SelectContent>
-                      </Select>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
+              <CardContent className="space-y-6">
+                <div className="space-y-4">
+                  <h4 className="font-medium text-sm">Taxa de Adesão</h4>
+                  <div className="grid gap-4 md:grid-cols-2">
+                    <FormField
+                      control={form.control}
+                      name="commissionType"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Tipo de Comissão - Taxa de Adesão *</FormLabel>
+                          <Select onValueChange={field.onChange} defaultValue={field.value}>
+                            <FormControl>
+                              <SelectTrigger>
+                                <SelectValue placeholder="Selecione o tipo" />
+                              </SelectTrigger>
+                            </FormControl>
+                            <SelectContent>
+                              <SelectItem value="percentage">% sobre venda</SelectItem>
+                              <SelectItem value="fixed">Valor fixo</SelectItem>
+                            </SelectContent>
+                          </Select>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
 
-                <FormField
-                  control={form.control}
-                  name="expectedCommissionRate"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>
-                        {form.watch("commissionType") === "percentage" ? "Expectativa de % *" : "Expectativa de Valor (R$) *"}
-                      </FormLabel>
-                      <FormControl>
-                        <Input
-                          type="number"
-                          step="0.01"
-                          min="0"
-                          placeholder={form.watch("commissionType") === "percentage" ? "Ex: 5.5" : "Ex: 100.00"}
-                          {...field}
-                        />
-                      </FormControl>
-                      <FormDescription>
-                        Esta é apenas sua expectativa inicial, a comissão final será negociada.
-                      </FormDescription>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
+                    <FormField
+                      control={form.control}
+                      name="expectedCommissionRate"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>
+                            {form.watch("commissionType") === "percentage" ? "Comissão - Taxa de Adesão (%)" : "Comissão - Taxa de Adesão (R$)"}
+                          </FormLabel>
+                          <FormControl>
+                            <Input
+                              type="number"
+                              step="0.01"
+                              min="0"
+                              placeholder={form.watch("commissionType") === "percentage" ? "Ex: 5.5" : "Ex: 100.00"}
+                              {...field}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+                </div>
+
+                <div className="space-y-4">
+                  <h4 className="font-medium text-sm">Mensalidades</h4>
+                  <div className="grid gap-4 md:grid-cols-2">
+                    <FormField
+                      control={form.control}
+                      name="subscriptionCommissionType"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Tipo de Comissão - Mensalidades *</FormLabel>
+                          <Select onValueChange={field.onChange} defaultValue={field.value}>
+                            <FormControl>
+                              <SelectTrigger>
+                                <SelectValue placeholder="Selecione o tipo" />
+                              </SelectTrigger>
+                            </FormControl>
+                            <SelectContent>
+                              <SelectItem value="percentage">% sobre venda</SelectItem>
+                              <SelectItem value="fixed">Valor fixo</SelectItem>
+                            </SelectContent>
+                          </Select>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+
+                    <FormField
+                      control={form.control}
+                      name="expectedSubscriptionCommissionRate"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>
+                            {form.watch("subscriptionCommissionType") === "percentage" ? "Comissão - Mensalidades (%)" : "Comissão - Mensalidades (R$)"}
+                          </FormLabel>
+                          <FormControl>
+                            <Input
+                              type="number"
+                              step="0.01"
+                              min="0"
+                              placeholder={form.watch("subscriptionCommissionType") === "percentage" ? "Ex: 3.0" : "Ex: 50.00"}
+                              {...field}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+                </div>
+                
+                <p className="text-sm text-muted-foreground">
+                  Estas são apenas suas expectativas iniciais, as comissões finais serão negociadas.
+                </p>
               </CardContent>
             </Card>
 
