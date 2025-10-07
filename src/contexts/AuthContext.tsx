@@ -14,7 +14,6 @@ const AuthContext = React.createContext<AuthContextType | undefined>(undefined);
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [user, setUser] = React.useState<User | null>(null);
   
-  // Verificar token ao carregar
   React.useEffect(() => {
     const token = localStorage.getItem('authToken');
     const storedUser = localStorage.getItem('currentUser');
@@ -28,13 +27,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const login = async (email: string, password: string): Promise<boolean> => {
     try {
       const response = await axiosClient.post('/auth/login', { email, password });
-      const { user, token } = response.data;
+      const { user, token } = response.data.data;
       
-      // Armazenar token
       localStorage.setItem('authToken', token);
       localStorage.setItem('currentUser', JSON.stringify(user));
-      
-      // Configurar token no axios
       axiosClient.defaults.headers.common['Authorization'] = `Bearer ${token}`;
       
       setUser(user);
