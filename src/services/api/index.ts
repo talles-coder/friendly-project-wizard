@@ -3,6 +3,7 @@ export { usersService } from './usersService';
 export { couponsService } from './couponsService';
 export { affiliatesService } from './affiliatesService';
 export { dashboardService } from './dashboardService';
+export { authService } from './authService';
 
 export { API_CONFIG, apiClient } from './config';
 export type { ApiResponse, PaginatedResponse, ApiError } from './config';

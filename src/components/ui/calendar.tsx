@@ -24,10 +24,10 @@ function Calendar({
         month: "space-y-4",
         caption: "flex justify-center pt-1 relative items-center",
         caption_label: "text-sm font-medium sr-only",
-        caption_dropdowns: "flex justify-center gap-1",
+        caption_dropdowns: "flex justify-center gap-2 items-center",
         vhidden: "sr-only",
-        dropdown_month: "relative inline-flex items-center px-3 py-1 text-sm bg-background border border-input rounded-md hover:bg-accent hover:text-accent-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2",
-        dropdown_year: "relative inline-flex items-center px-3 py-1 text-sm bg-background border border-input rounded-md hover:bg-accent hover:text-accent-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2",
+        dropdown_month: "relative inline-flex items-center justify-center px-3 py-2 text-sm bg-background border border-input rounded-md hover:bg-accent hover:text-accent-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 min-w-[120px]",
+        dropdown_year: "relative inline-flex items-center justify-center px-3 py-2 text-sm bg-background border border-input rounded-md hover:bg-accent hover:text-accent-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 min-w-[100px]",
         dropdown: "absolute z-50 bg-popover border border-border rounded-md shadow-md",
         nav: "space-x-1 flex items-center",
         nav_button: cn(
