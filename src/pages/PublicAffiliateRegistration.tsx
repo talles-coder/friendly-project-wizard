@@ -216,7 +216,7 @@ export default function PublicAffiliateRegistration() {
                   control={form.control}
                   name="birthDate"
                   render={({ field }) => (
-                    <FormItem className="flex flex-col">
+                    <FormItem className="flex flex-col justify-end">
                       <FormLabel>Data de Nascimento *</FormLabel>
                       <Popover>
                         <PopoverTrigger asChild>
